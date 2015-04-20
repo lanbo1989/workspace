@@ -1,0 +1,161 @@
+package com.msee.mseetv.base;
+
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import android.os.Message;
+import android.text.TextUtils;
+
+import com.android.volley.Request.Method;
+import com.google.gson.reflect.TypeToken;
+import com.msee.mseetv.MseeApplication;
+import com.msee.mseetv.R;
+import com.msee.mseetv.http.ErrorResponseListener;
+import com.msee.mseetv.http.JsonRequest;
+import com.msee.mseetv.http.RequestManager;
+import com.msee.mseetv.http.ResponseListener;
+import com.msee.mseetv.module.home.api.GetDataHandler;
+import com.msee.mseetv.module.login.result.LoginResult;
+import com.msee.mseetv.utils.L;
+import com.msee.mseetv.utils.Utils;
+
+public class BaseAPI {
+	private static final String TAG = "BaseAPI";
+	// private static final String BASE_URL = "http://secure.msee.tv";
+	// private static final String BASE_URL =
+	// "http://private-21f8fa-seefansrestapi2015.apiary-proxy.com";
+	private static final String BASE_URL = "http://dev.msee.hk";
+	public static final int REQUEST_SUCCESS = 200;
+	public static final int REQUEST_FAILED = 201;
+
+	/**
+	 * 发送请求
+	 */
+	public void sendRequest(int method, int arg, GetDataHandler getDataHandler,
+			String url, HashMap<String, String> postParamsData, Type type,
+			HashMap<String, Object> getParamsData) {
+		// 发送滚动信息列表请求
+		Message loadMsg = new Message();
+		loadMsg.arg1 = arg;
+		loadMsg.setTarget(getDataHandler);
+		excuteHttp(method, url, loadMsg, TAG, paramsData, type);
+	}
+
+	/**
+	 * 请求
+	 * 
+	 * @param url
+	 * @param tag
+	 */
+	public <T> void excuteHttp(int method, String partUrl, Message msg,
+			final String tag, HashMap<String, Object> getParamsData,
+			HashMap<String, String> postParamsData, Type type) {
+		if (Utils.isNetworkConnected()) {
+			String url = BASE_URL + partUrl;
+			url += encodeCommonParams() + encodeParams(getParamsData);
+			L.e(TAG, tag + "|GET_URL", url);
+			ResponseListener<T> listener = new ResponseListener<T>(msg);
+			ErrorResponseListener errorListener = new ErrorResponseListener(msg);
+			JsonRequest<T> request = new JsonRequest<T>(method, url, listener,
+					errorListener, type, postParamsData);
+			RequestManager.addRequest(request, tag);
+		} else {
+			Utils.Toast("网络异常，请检查网络！");
+		}
+	}
+
+	/**
+	 * Get请求
+	 * 
+	 * @param url
+	 * @param tag
+	 */
+	public <T> void excuteHttpGet(String partUrl, Message msg,
+			final String tag, HashMap<String, Object> param, Type type) {
+		if (Utils.isNetworkConnected()) {
+			String url = BASE_URL + partUrl;
+			url += encodeCommonParams() + encodeParams(param);
+			L.e(TAG, tag + "|GET_URL", url);
+			ResponseListener<T> listener = new ResponseListener<T>(msg);
+			ErrorResponseListener errorListener = new ErrorResponseListener(msg);
+			JsonRequest<T> request = new JsonRequest<T>(Method.GET, url,
+					listener, errorListener, type, null);
+			RequestManager.addRequest(request, tag);
+		} else {
+			Utils.Toast("网络异常，请检查网络！");
+		}
+	}
+
+	/**
+	 * post请求
+	 *
+	 * @param handler
+	 * @param tag
+	 * @param param
+	 * @param postData
+	 */
+	public static <T> void excuteHttpPost(String partUrl, Message msg,
+			String tag, Type type, HashMap<String, String> paramsData) {
+		if (Utils.isNetworkConnected()) {
+			String url = BASE_URL + partUrl;
+			L.e(TAG, tag + "|POSH_URL", url);
+			ResponseListener<T> listener = new ResponseListener<T>(msg);
+			ErrorResponseListener errorListener = new ErrorResponseListener(msg);
+			JsonRequest<T> request = new JsonRequest<T>(Method.POST, url,
+					listener, errorListener, type, paramsData);
+			RequestManager.addRequest(request, tag);
+		} else {
+			Utils.Toast("网络异常，请检查网络！");
+		}
+	}
+
+	/**
+	 * 拼接通用参数
+	 */
+	private static String encodeCommonParams() {
+		String params = "";
+		try {
+			if (MseeApplication.getInstance() != null) {
+				if (!params.contains("os")) {
+					params += "os="
+							+ MseeApplication.getInstance().getString(
+									R.string.os);
+				}
+				if (!params.contains("ver")) {
+					params += "&ver="
+							+ Utils.getVerName(MseeApplication.getInstance())
+							+ "&";
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return params;
+	}
+
+	/**
+	 * 解析HashMap中的信息
+	 * 
+	 * @param maps
+	 * @return
+	 */
+	private static String encodeParams(HashMap<String, Object> maps) {
+		String url = "";
+		if (null != maps && maps.size() > 0) {
+			Iterator<String> iter = maps.keySet().iterator();
+			while (iter.hasNext()) {
+				String key = iter.next();
+				String value = String.valueOf(maps.get(key));
+				if (!TextUtils.isEmpty(value) && !TextUtils.isEmpty(key)) {
+					url += key + "=" + value + "&";
+				}
+			}
+			if (!TextUtils.isEmpty(url) && url.endsWith("&")) {
+				url = url.substring(0, url.lastIndexOf("&"));
+			}
+		}
+		return url;
+	}
+
+}

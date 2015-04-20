@@ -1,0 +1,26 @@
+package com.msee.mseetv.module.home.entity;
+
+import com.google.gson.annotations.SerializedName;
+import com.msee.mseetv.utils.Utils;
+
+public class HotMessage {
+	@SerializedName("msg_id")
+	public long msgId;
+	@SerializedName("msg_content")
+	public String msgContent;
+	@SerializedName("msg_time")
+	public String msgTime;
+
+	public long getMsgId() {
+		return msgId;
+	}
+
+	public String getMsgContent() {
+		return msgContent;
+	}
+
+	public String getMsgTime() {
+		return Utils.getDetailTime(msgTime);
+	}
+
+}

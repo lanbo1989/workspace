@@ -1,0 +1,148 @@
+package com.msee.mseetv.module.login.ui;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Message;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.msee.mseetv.MseeApplication;
+import com.msee.mseetv.R;
+import com.msee.mseetv.base.BaseActivity;
+import com.msee.mseetv.base.BaseEntity;
+import com.msee.mseetv.common.Common;
+import com.msee.mseetv.module.home.ui.HomeActivity;
+import com.msee.mseetv.module.login.api.LoginApi;
+import com.msee.mseetv.module.login.result.LoginResult;
+import com.msee.mseetv.module.user.api.UserInfo;
+import com.msee.mseetv.utils.L;
+import com.msee.mseetv.utils.Utils;
+
+@SuppressWarnings("unchecked")
+public class LoginActivity extends BaseActivity implements OnClickListener {
+	private static final String TAG = "LoginActivity";
+	private EditText usernameEdit, passwordEdit;
+	private ImageView sinaBtn, weixinBtn, qqBtn, signInBtn;
+	private TextView mobileRegister, forgetPassword;
+	private LoginApi loginApi;
+	private String userName, passWord;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		MseeApplication.getInstance().activityList.add(this);
+		getSupportActionBar().hide();
+		setContentView(R.layout.activity_login);
+		loginApi = new LoginApi(mGetDataHandler);
+		initView();
+
+	}
+
+	private void initView() {
+		usernameEdit = (EditText) findViewById(R.id.username_edit);
+		passwordEdit = (EditText) findViewById(R.id.password_edit);
+		sinaBtn = (ImageView) findViewById(R.id.sina_btn);
+		weixinBtn = (ImageView) findViewById(R.id.weixin_btn);
+		qqBtn = (ImageView) findViewById(R.id.qq_btn);
+		signInBtn = (ImageView) findViewById(R.id.sign_in);
+		mobileRegister = (TextView) findViewById(R.id.mobile_register);
+		forgetPassword = (TextView) findViewById(R.id.forget_password);
+
+		sinaBtn.setOnClickListener(this);
+		weixinBtn.setOnClickListener(this);
+		qqBtn.setOnClickListener(this);
+		signInBtn.setOnClickListener(this);
+		mobileRegister.setOnClickListener(this);
+		forgetPassword.setOnClickListener(this);
+		userName = Utils.getData("username");
+		if (!Utils.checkString(userName)) {
+			usernameEdit.setText(userName);
+		}
+		passWord = Utils.getData("passWord");
+		if (!Utils.checkString(passWord)) {
+			passwordEdit.setText(passWord);
+		}
+		String x_auth_token = Utils.getData("X-Auth-Token");
+		if (Common.isLoginExpiresIn && !Utils.checkString(x_auth_token)) {
+			Intent intent = new Intent();
+			intent.setClass(this, HomeActivity.class);
+			startActivity(intent);
+			finish();
+		}
+	}
+
+	/**
+	 * 数据请求成功
+	 */
+	public void getDataForView(Message msg) {
+		super.getDataForView(msg);
+		switch (msg.arg1) {
+		case LoginApi.LOAD_LOGIN:
+			LoginResult loginResult = ((BaseEntity<LoginResult>) msg.obj).result;
+			Utils.setData("X-Storage-Token", loginResult.getStorageToken());
+			loginApi.sendGetToken();
+			break;
+		case LoginApi.LOAD_GETTOKEN:
+			loginApi.sendGetUserInfo();
+			break;
+		case LoginApi.LOAD_GETUSERINFO:
+			Utils.setData("username", userName);
+			Utils.setData("passWord", passWord);
+			Intent intent = new Intent();
+			intent.setClass(this, HomeActivity.class);
+			startActivity(intent);
+			UserInfo userInfo = ((BaseEntity<UserInfo>) msg.obj).result;
+			UserInfo.setUserinfo(userInfo);
+			finish();
+			break;
+		default:
+			break;
+		}
+	};
+
+	/**
+	 * 数据请求失败
+	 */
+	@Override
+	public void getDataError(Message msg) {
+		super.getDataError(msg);
+		L.e("", "", "没有系统消息");
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.sina_btn:
+
+			break;
+		case R.id.weixin_btn:
+
+			break;
+		case R.id.qq_btn:
+
+			break;
+		case R.id.sign_in:
+			userName = usernameEdit.getText().toString();
+			passWord = passwordEdit.getText().toString();
+			if (!Utils.checkString(userName) && !Utils.checkString(passWord)) {
+				loginApi.sendLogin(userName, passWord);
+			} else {
+				Utils.Toast("用户名密码不能为空！");
+				passwordEdit.setText("");
+			}
+			break;
+		case R.id.mobile_register:
+
+			break;
+		case R.id.forget_password:
+
+			break;
+
+		default:
+			break;
+		}
+	}
+}

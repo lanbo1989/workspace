@@ -1,0 +1,17 @@
+package com.msee.mseetv.module.register.ui;
+
+import android.os.Bundle;
+
+import com.msee.mseetv.R;
+import com.msee.mseetv.base.BaseActivity;
+
+public class PerfectInformationActivity extends BaseActivity{
+	@Override
+	protected void onCreate(Bundle arg0) {
+		// TODO Auto-generated method stub
+		super.onCreate(arg0);
+		setContentView(R.layout.activity_register1);
+	}
+	
+	public void onClick(android.view.View v) {};
+}

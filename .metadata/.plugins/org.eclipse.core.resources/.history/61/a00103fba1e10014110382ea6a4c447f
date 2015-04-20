@@ -1,0 +1,44 @@
+package com.msee.mseetv.module.home.entity;
+
+import com.google.gson.annotations.SerializedName;
+
+public class HotListItem {
+	@SerializedName("add_time")
+	public String add_time;
+	@SerializedName("id")
+	public String id;
+	@SerializedName("url")
+	public String url;
+	@SerializedName("intro")
+	public String intro;
+	@SerializedName("ym_id")
+	public String ym_id;
+	@SerializedName("img")
+	public String img;
+	@SerializedName("is_master")
+	public String is_master;
+	@SerializedName("nickname")
+	public String nickname;
+	@SerializedName("hx_id")
+	public String hx_id;
+	@SerializedName("hx_uuid")
+	public String hx_uuid;
+	@SerializedName("user_img")
+	public String user_img;
+	@SerializedName("fame")
+	public String fame; // 视频热度
+	@SerializedName("allow_comment")
+	public String allow_comment;
+	@SerializedName("assist")
+	public String assist;
+	@SerializedName("riches")
+	public String riches;
+	@SerializedName("brisk")
+	public String brisk;
+	@SerializedName("exp")
+	public String exp;
+	@SerializedName("status")
+	public String status;
+
+
+}

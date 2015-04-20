@@ -1,0 +1,117 @@
+package com.msee.mseetv.utils;
+
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout.LayoutParams;
+
+import com.msee.mseetv.R;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+
+public class ImageUtils {
+
+	private static ImageView mImageView;
+	private static ProgressBar mProgressBar;
+	private static Drawable mDefaultDrawable;
+
+	/**
+	 * 获取网络图片
+	 * 
+	 * @param imageUrl
+	 *            图片URL
+	 * @param imageView
+	 *            要设置的控件
+	 * @param progressBar
+	 *            进度条
+	 * @param drawable
+	 *            默认图片
+	 */
+	public static void getNetImage(String imageUrl, ImageView imageView,
+			ProgressBar progressBar, Drawable defaultDrawable,int rounde) {
+		mImageView = imageView;
+		mProgressBar = progressBar;
+		mDefaultDrawable = defaultDrawable;
+		// ImageLoader.getInstance().displayImage(imageUrl, imageView,
+		// imageLoadingListener);
+		DisplayImageOptions options = new DisplayImageOptions.Builder()
+				.displayer(new RoundedBitmapDisplayer(rounde)).build();
+
+		ImageLoader.getInstance().displayImage(imageUrl, imageView, options,
+				imageLoadingListener);
+
+	}
+
+	/**
+	 * 图片加载监听
+	 */
+	public static ImageLoadingListener imageLoadingListener = new ImageLoadingListener() {
+		@Override
+		public void onLoadingStarted(String imageUri, View view) {
+
+			// 这儿初先初始化出来image所占的位置的大小，先把瀑布流固定住，这样瀑布流就不会因为图片加载出来后大小变化了
+			LayoutParams lp = (LayoutParams) mImageView.getLayoutParams();
+			// 多屏幕适配
+			int dWidth = 480;
+			int dHeight = 800;
+			float wscale = dWidth / 480.0f;
+			float hscale = dHeight / 800.0f;
+			Drawable bannerDefault = getResources().getDrawable(
+					R.drawable.banner_default);
+			lp.height = (int) (mDefaultDrawable.getIntrinsicHeight() * hscale);
+			lp.width = (int) (mDefaultDrawable.getIntrinsicHeight() * wscale);
+			mImageView.setLayoutParams(lp);
+
+			mImageView.setImageDrawable(mDefaultDrawable);
+			if (null != mProgressBar) {
+				mProgressBar.setVisibility(View.VISIBLE);
+			}
+		}
+
+		@Override
+		public void onLoadingFailed(String imageUri, View view,
+				FailReason failReason) {
+			String message = null;
+			switch (failReason.getType()) {
+			case IO_ERROR:
+				message = "Input/Output error";
+				break;
+			case DECODING_ERROR:
+				message = "can not be decoding";
+				break;
+			case NETWORK_DENIED:
+				message = "Downloads are denied";
+				break;
+			case OUT_OF_MEMORY:
+				message = "内存不足";
+				Utils.Toast(message);
+				break;
+			case UNKNOWN:
+				message = "Unknown error";
+				Utils.Toast(message);
+				break;
+			}
+			if (null != mProgressBar) {
+				mProgressBar.setVisibility(View.GONE);
+			}
+		}
+
+		@Override
+		public void onLoadingComplete(String imageUri, View view,
+				Bitmap loadedImage) {
+			if (null != mProgressBar) {
+				mProgressBar.setVisibility(View.GONE);
+			}
+		}
+
+		@Override
+		public void onLoadingCancelled(String paramString, View paramView) {
+		}
+	};
+
+}

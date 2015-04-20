@@ -1,0 +1,7 @@
+package com.msee.mseetv.module.home.adapter;
+class HotHolder {
+	public ImageView rowIcon;
+	public ProgressBar pbLoad;
+	public ImageView beautyIcon;
+	public TextView beautyName;
+}

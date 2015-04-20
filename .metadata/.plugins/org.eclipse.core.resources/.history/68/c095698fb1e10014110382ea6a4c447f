@@ -1,0 +1,7 @@
+package com.msee.mseetv.base;
+
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+
+public class BaseActivity extends SherlockFragmentActivity{
+
+}

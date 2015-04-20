@@ -1,0 +1,8 @@
+package com.msee.mseetv.common;
+
+public class Common {
+	/**
+	 * 是否登录过期
+	 */
+	public static boolean isLoginExpiresIn = false;
+}

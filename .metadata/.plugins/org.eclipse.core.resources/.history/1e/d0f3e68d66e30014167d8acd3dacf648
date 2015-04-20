@@ -1,0 +1,18 @@
+package com.msee.mseetv.module.user.api;
+
+import com.google.gson.annotations.SerializedName;
+
+public class UserInfo {
+	@SerializedName("fans_vip_level")
+	private int fansVipLevel;
+	@SerializedName("is_new_mail")
+	private boolean isNewMail;
+	@SerializedName("is_push_msg")
+	private boolean isPushMsg;
+	@SerializedName("username")
+	private String username;
+	@SerializedName("uuid")
+	private String uuid;
+
+
+}

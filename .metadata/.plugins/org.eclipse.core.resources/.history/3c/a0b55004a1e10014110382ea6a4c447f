@@ -1,0 +1,18 @@
+package com.msee.mseetv.module.home.entity;
+
+import com.google.gson.annotations.SerializedName;
+
+public class AD {
+	@SerializedName("ad_id")
+	public long adId;
+	@SerializedName("ad_photo")
+	public String adPhoto;
+	@SerializedName("ad_type")
+	public int adType;
+	@SerializedName("ad_otherid")
+	public long adOtherId;
+	@SerializedName("ad_url")
+	public String adUrl;
+	
+
+}

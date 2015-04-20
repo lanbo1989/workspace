@@ -1,0 +1,45 @@
+package com.msee.mseetv.module.register.api;
+
+import java.util.HashMap;
+
+import com.android.volley.Request.Method;
+import com.google.gson.reflect.TypeToken;
+import com.msee.mseetv.base.BaseAPI;
+import com.msee.mseetv.base.BaseEntity;
+import com.msee.mseetv.base.BaseParameter;
+import com.msee.mseetv.module.home.api.GetDataHandler;
+import com.msee.mseetv.module.login.result.LoginResult;
+
+public class RegistApi extends BaseAPI {
+
+	private static final String TAG = "RegistApi";
+	private static final String URL_MOBILE_CODE_REGIST = "/ms/reg/mobile_reg_step1";
+	public static final int LOAD_GETMOBILECODE = 0;
+
+	private GetDataHandler mGetDataHandler;
+
+	public RegistApi(GetDataHandler mGetDataHandler) {
+		this.mGetDataHandler = mGetDataHandler;
+	}
+
+	/**
+	 * 获取验证码
+	 */
+	public void sendMobileRegist(String mobile) {
+		BaseParameter baseParameter = new BaseParameter();
+		baseParameter.setMethod(Method.POST);
+		baseParameter.setArg(LOAD_GETMOBILECODE);
+		baseParameter.setTag(TAG);
+		baseParameter.setGetDataHandler(mGetDataHandler);
+		baseParameter.setUrl(URL_MOBILE_CODE_REGIST);
+		java.lang.reflect.Type type = new TypeToken<BaseEntity<String>>() {
+		}.getType();
+		baseParameter.setType(type);
+		HashMap<String, String> paramsData = new HashMap<String, String>();
+		paramsData.put("mobile", mobile);
+		baseParameter.setPostParamsData(paramsData);
+		excuteHttp(baseParameter);
+	}
+	
+
+}

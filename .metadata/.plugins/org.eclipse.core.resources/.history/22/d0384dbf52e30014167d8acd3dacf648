@@ -1,0 +1,74 @@
+package com.msee.mseetv.base;
+
+import java.lang.reflect.Type;
+import java.util.HashMap;
+
+import com.msee.mseetv.module.home.api.GetDataHandler;
+
+public class BaseParameter {
+	
+	private int method;
+	private int arg;
+	private GetDataHandler getDataHandler;
+	private String url;
+	private HashMap<String, String> postParamsData;
+	private Type type;
+	private HashMap<String, Object> getParamsData;
+
+	public int getMethod() {
+		return method;
+	}
+
+	public void setMethod(int method) {
+		this.method = method;
+	}
+
+	public int getArg() {
+		return arg;
+	}
+
+	public void setArg(int arg) {
+		this.arg = arg;
+	}
+
+	public GetDataHandler getGetDataHandler() {
+		return getDataHandler;
+	}
+
+	public void setGetDataHandler(GetDataHandler getDataHandler) {
+		this.getDataHandler = getDataHandler;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public HashMap<String, String> getPostParamsData() {
+		return postParamsData;
+	}
+
+	public void setPostParamsData(HashMap<String, String> postParamsData) {
+		this.postParamsData = postParamsData;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public void setType(Type type) {
+		this.type = type;
+	}
+
+	public HashMap<String, Object> getGetParamsData() {
+		return getParamsData;
+	}
+
+	public void setGetParamsData(HashMap<String, Object> getParamsData) {
+		this.getParamsData = getParamsData;
+	}
+
+}

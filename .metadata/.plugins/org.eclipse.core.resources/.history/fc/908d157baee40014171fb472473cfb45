@@ -1,0 +1,118 @@
+package com.msee.mseetv.module.home.adapter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout.LayoutParams;
+import android.widget.TextView;
+
+import com.msee.mseetv.R;
+import com.msee.mseetv.module.home.entity.HotListItem;
+import com.msee.mseetv.utils.ImageUtils;
+
+public class WaterfallAdapter extends BaseAdapter {
+	private List<HotListItem> hotListItems = new ArrayList<HotListItem>();
+	private Context context;
+
+	public WaterfallAdapter(Context context) {
+		this.context = context;
+	}
+
+	public void setList(List<HotListItem> hotListItems) {
+		this.hotListItems = hotListItems;
+		notifyDataSetChanged();
+	}
+
+	public void addList(List<HotListItem> hotListItems) {
+		this.hotListItems.addAll(hotListItems);
+		notifyDataSetChanged();
+	}
+
+	public void clearList() {
+		this.hotListItems.clear();
+		notifyDataSetChanged();
+	}
+
+	@Override
+	public int getCount() {
+		return hotListItems != null ? hotListItems.size() : 0;
+	}
+
+	@Override
+	public Object getItem(int arg0) {
+		return null;
+	}
+
+	@Override
+	public long getItemId(int arg0) {
+		return 0;
+	}
+
+	@Override
+	public View getView(int position, View view, ViewGroup group) {
+		final Holder holder;
+		// 得到View
+		if (view == null) {
+			holder = new Holder();
+			LayoutInflater inflater = LayoutInflater.from(context);
+			view = inflater.inflate(R.layout.image_item, null);
+			holder.rowIcon = (ImageView) view.findViewById(R.id.row_icon);
+			holder.beautyIcon = (ImageView) view.findViewById(R.id.beauty_icon);
+			holder.beautyName = (TextView) view.findViewById(R.id.beauty_name);
+			holder.pbLoad = (ProgressBar) view.findViewById(R.id.pb_load);
+			view.setTag(holder);
+		} else {
+			holder = (Holder) view.getTag();
+		}
+		HotListItem hotListItem = hotListItems.get(position);
+		
+		String workCover = hotListItem.getWorkCover();
+		Drawable workCoverDefault = context.getResources().getDrawable(
+				R.drawable.load_default);
+		
+		LayoutParams layoutp = holder.rowIcon.getLayoutParams();
+		
+		holder.rowIcon.setLayoutParams(new layoutp);
+		
+		ImageUtils.getNetImage(workCover, holder.rowIcon, holder.pbLoad,workCoverDefault,0);
+		
+		
+		String headerSmall = hotListItem.getHeaderSmall();
+		Drawable headerSmallDefault = context.getResources().getDrawable(
+				R.drawable.ic_launcher);
+		ImageUtils.getNetImage(headerSmall, holder.beautyIcon, null,headerSmallDefault,90);
+		
+		
+		
+		holder.beautyName.setText(hotListItem.getUserName());
+		notifyDataSetChanged();
+		
+		holder.rowIcon.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				// TODO Auto-generated method stub
+				Log.i("TAG", "image click");
+			}
+		});
+
+		return view;
+	}
+	
+}
+
+class Holder {
+	public ImageView rowIcon;
+	public ProgressBar pbLoad;
+	public ImageView beautyIcon;
+	public TextView beautyName;
+}

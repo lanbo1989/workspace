@@ -1,0 +1,63 @@
+package com.msee.mseetv.module.home.adapter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.content.Context;
+import android.support.v4.view.PagerAdapter;
+import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+
+public class BannerAdapter extends PagerAdapter {
+
+	private ArrayList<ImageView> mImageList = new ArrayList<ImageView>();
+	private Context context;
+	public BannerAdapter(Context context) {
+		this.context = context;
+	}
+
+	@Override
+	public int getCount() {
+		// 将viewpager页数设置成Integer.MAX_VALUE，可以模拟无限循环
+		return Integer.MAX_VALUE;
+	}
+
+	public void setBanner(List<ImageView> mImageList) {
+		Log.e("", "------------"+mImageList.size());
+		this.mImageList = (ArrayList<ImageView>) mImageList;
+		notifyDataSetChanged();
+	}
+
+	/**
+	 ** 复用对象 true 复用view false 复用的是Object
+	 */
+	@Override
+	public boolean isViewFromObject(View arg0, Object arg1) {
+		return arg0 == arg1;
+	}
+
+	/***
+	 * 销毁对象
+	 * 
+	 * @param position
+	 *            被销毁对象的索引位置
+	 */
+	@Override
+	public void destroyItem(ViewGroup container, int position, Object object) {
+		container.removeView(mImageList.get(position % mImageList.size()));
+	}
+
+	/***
+	 * 初始化一个对象
+	 * 
+	 * @param position
+	 *            初始化对象的索引位置
+	 */
+	@Override
+	public Object instantiateItem(ViewGroup container, int position) {
+		container.addView(mImageList.get(position % mImageList.size()));
+		return mImageList.get(position % mImageList.size());
+	}
+}

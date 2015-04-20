@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+      <color name="msee_title_bg">#f4237b</color>
+      <color name="title_color">#f4237b</color>
+      <color name="text_color">#f5b5b5b</color>
+</resources>

@@ -1,0 +1,102 @@
+package com.msee.mseetv.module.user.ui;
+
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.actionbarsherlock.app.SherlockFragment;
+import com.msee.mseetv.R;
+import com.msee.mseetv.base.BaseFrgment;
+import com.msee.mseetv.utils.ImageUtils;
+
+public class MyFragment extends BaseFrgment {
+	private static final String TAG = "MyFragment";
+	private View rootView;
+	private LayoutInflater inflater;
+	private ImageView settingBtn, userIcon, userLvlIcon;
+	private TextView userNameText, userLvlText, lvlText1, lvlText, lvlText2;
+	private ProgressBar progressBar;
+	private RelativeLayout mflwLayout, zhczLayout, bjdaLayout, yjfkLayout;
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		this.inflater = inflater;
+		rootView = inflater.inflate(R.layout.my_fragment, null);
+		ImageView imageView = (ImageView) rootView
+				.findViewById(R.id.imageView2);
+		Drawable defaultDrawable = getResources().getDrawable(
+				R.drawable.ic_launcher);
+		ImageUtils.getNetImage("http://p2.qhimg.com/t01a3045db6e5822319.jpg",
+				imageView, null, defaultDrawable, 90);
+		initView();
+		return rootView;
+	}
+
+	public void initView() {
+		settingBtn = (ImageView) rootView.findViewById(R.id.setting_btn);
+		userIcon = (ImageView) rootView.findViewById(R.id.user_icon);
+		userLvlIcon = (ImageView) rootView.findViewById(R.id.user_lvl_icon);
+		userNameText = (TextView) rootView.findViewById(R.id.username);
+		userLvlText = (TextView) rootView.findViewById(R.id.user_lvl_text);
+		lvlText1 = (TextView) rootView.findViewById(R.id.lvl_text1);
+		lvlText = (TextView) rootView.findViewById(R.id.lvl_text);
+		lvlText2 = (TextView) rootView.findViewById(R.id.lvl_text2);
+		progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
+		mflwLayout = (RelativeLayout) rootView.findViewById(R.id.mflw_layout);
+		zhczLayout = (RelativeLayout) rootView.findViewById(R.id.zhcz_layout);
+		bjdaLayout = (RelativeLayout) rootView.findViewById(R.id.bjda_layout);
+		yjfkLayout = (RelativeLayout) rootView.findViewById(R.id.yjfk_layout);
+		settingBtn.setOnClickListener(this);
+		userIcon.setOnClickListener(this);
+		mflwLayout.setOnClickListener(this);
+		zhczLayout.setOnClickListener(this);
+		bjdaLayout.setOnClickListener(this);
+		yjfkLayout.setOnClickListener(this);
+
+	}
+
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.setting_btn:
+
+			break;
+		case R.id.user_icon:
+
+			break;
+		case R.id.user_lvl_icon:
+
+			break;
+		case R.id.mflw_layout:
+
+			break;
+		case R.id.zhcz_layout:
+
+			break;
+		case R.id.bjda_layout:
+
+			break;
+		case R.id.yjfk_layout:
+
+			break;
+		default:
+			break;
+		}
+	};
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+	}
+
+	public static MyFragment newInstance() {
+		MyFragment fragment = new MyFragment();
+		return fragment;
+	}
+}

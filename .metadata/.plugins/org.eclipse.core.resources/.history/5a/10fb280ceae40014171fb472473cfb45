@@ -1,0 +1,343 @@
+package com.msee.mseetv.module.home.fragment;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import android.annotation.SuppressLint;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout.LayoutParams;
+
+import com.huewu.pla.lib.MultiColumnPullToRefreshListView;
+import com.huewu.pla.lib.MultiColumnPullToRefreshListView.OnRefreshListener;
+import com.huewu.pla.lib.internal.PLA_AbsListView;
+import com.huewu.pla.lib.internal.PLA_AbsListView.OnScrollListener;
+import com.msee.mseetv.R;
+import com.msee.mseetv.base.BaseEntity;
+import com.msee.mseetv.base.BaseFrgment;
+import com.msee.mseetv.common.Common;
+import com.msee.mseetv.module.home.adapter.BannerAdapter;
+import com.msee.mseetv.module.home.adapter.WaterfallAdapter;
+import com.msee.mseetv.module.home.api.HotFragmentApi;
+import com.msee.mseetv.module.home.entity.AD;
+import com.msee.mseetv.module.home.entity.HotListItem;
+import com.msee.mseetv.module.home.result.ADResult;
+import com.msee.mseetv.module.home.result.HotListResult;
+import com.msee.mseetv.utils.ImageUtils;
+
+@SuppressLint({ "HandlerLeak", "InflateParams" })
+public class HotFragment extends BaseFrgment {
+
+	private static final String TAG = "HotFragment";
+
+	private HotFragmentApi hotFragmentApi;
+
+	private View rootView, bannerView, popView;
+	private MultiColumnPullToRefreshListView waterfallView;// 可以把它当成一个listView
+	private WaterfallAdapter adapter;
+	private boolean isLastRow;
+	/** banner相关 */
+	private BannerAdapter bannerAdapter;
+	private List<ImageView> mImageList;
+	private List<ImageView> dots;
+	private int previousPointEnale = 0;
+	/** 记录上一次点的位置，默认为0 */
+	private ViewPager mViewPager;
+	private LinearLayout bannerLayout;
+	private Timer timer;
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		rootView = inflater.inflate(R.layout.home_fragment_hot, null);
+		super.onCreateView(inflater, container, savedInstanceState);
+		hotFragmentApi = new HotFragmentApi(mGetDataHandler);
+		sendRequest(pageNum);
+		return rootView;
+	}
+
+	public void initView() {
+		waterfallView = (MultiColumnPullToRefreshListView) rootView
+				.findViewById(R.id.list);
+		waterfallView.setColumnNumber(2);
+		// initBanner();
+		bannerView = inflater.inflate(R.layout.banner, null);
+		waterfallView.addHeaderView(bannerView);
+		adapter = new WaterfallAdapter(getActivity());
+		waterfallView.setAdapter(adapter);
+		waterfallView.setOnRefreshListener(new OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				// 下拉刷新要做的事
+				pageNum = 1;
+				sendRequest(pageNum);
+				// 刷新完成后记得调用这个
+				waterfallView.onRefreshComplete();
+			}
+		});
+		waterfallView.setOnScrollListener(new OnScrollListener() {
+			@Override
+			public void onScrollStateChanged(PLA_AbsListView view,
+					int scrollState) {
+				// TODO Auto-generated method stub
+				// 正在滚动时回调，回调2-3次，手指没抛则回调2次。scrollState = 2的这次不回调
+				// 回调顺序如下
+				// 第1次：scrollState = SCROLL_STATE_TOUCH_SCROLL(1) 正在滚动
+				// 第2次：scrollState = SCROLL_STATE_FLING(2)
+				// 手指做了抛的动作（手指离开屏幕前，用力滑了一下）
+				// 第3次：scrollState = SCROLL_STATE_IDLE(0) 停止滚动
+
+				// 当滚到最后一行且停止滚动时，执行加载
+				if (isLastRow
+						&& scrollState == PLA_AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
+					// 加载元素
+					sendRequest(++pageNum);
+					isLastRow = false;
+				}
+
+			}
+
+			@Override
+			public void onScroll(PLA_AbsListView view, int firstVisibleItem,
+					int visibleItemCount, int totalItemCount) {
+				// TODO Auto-generated method stub
+				// 滚动时一直回调，直到停止滚动时才停止回调。单击时回调一次。
+				// firstVisibleItem：当前能看见的第一个列表项ID（从0开始）
+				// visibleItemCount：当前能看见的列表项个数（小半个也算）
+				// totalItemCount：列表项共数
+
+				// 判断是否滚到最后一行
+				if (firstVisibleItem + visibleItemCount == totalItemCount
+						&& totalItemCount > 0) {
+					isLastRow = true;
+				}
+			}
+		});
+	}
+
+	private class BannerListener implements OnPageChangeListener {
+		@Override
+		public void onPageScrollStateChanged(int arg0) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void onPageScrolled(int arg0, float arg1, int arg2) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void onPageSelected(int arg0) {
+			// 获取新的位置
+			int newPosition = arg0 % mImageList.size();
+			// 消除上一次的状态点
+			bannerLayout.getChildAt(previousPointEnale).setEnabled(false);
+			// 设置当前的状态点“点”
+			bannerLayout.getChildAt(newPosition).setEnabled(true);
+			for (int i = 0; i < dots.size(); i++) {
+				dots.get(i).setBackgroundResource(R.drawable.banner_dian1);
+			}
+			dots.get(newPosition)
+					.setBackgroundResource(R.drawable.banner_dian2);
+			// 记录位置
+			previousPointEnale = newPosition;
+		}
+	}
+
+	// private void initBanner() {
+	//
+	// // mViewPager = (ViewPager) bannerView.findViewById(R.id.viewPager);
+	// bannerLayout = (LinearLayout) bannerView
+	// .findViewById(R.id.bannerlayout);
+	// // bannerAdapter = new BannerAdapter(getActivity());
+	// // mViewPager.setAdapter(bannerAdapter);
+	// // bannerAdapter.notifyDataSetChanged();
+	// //
+	// }
+
+	/**
+	 * 设置banner
+	 */
+	private void setBanner(List<AD> aList) {
+		bannerLayout = (LinearLayout) bannerView
+				.findViewById(R.id.bannerlayout);
+		dots = new ArrayList<ImageView>();
+		mImageList = new ArrayList<ImageView>();
+		ImageView mImageView;
+		LayoutParams params;
+		Drawable bannerDefault;
+		LayoutParams layoutp;
+		bannerDefault = getActivity().getResources().getDrawable(
+				R.drawable.banner_default);
+		// 初始化广告条资源
+		for (AD ad : aList) {
+			System.gc();
+			Log.e("", "######" + ad.getAdPhoto());
+			mImageView = new ImageView(getActivity());
+			layoutp = new LayoutParams(Common.WIDTH, 200);
+			mImageView.setLayoutParams(layoutp);
+			imageUtils.getNetImage(ad.getAdPhoto(), mImageView, null,
+					bannerDefault, 0);
+
+			mImageList.add(mImageView);
+			// 初始化广告条正下方的点
+			ImageView dot = new ImageView(getActivity());
+			dot.setBackgroundResource(R.drawable.banner_dian1);
+			params = new LayoutParams(15, 15);
+			params.leftMargin = 10;
+			dot.setLayoutParams(params);
+			dots.add(dot);
+			bannerLayout.addView(dot);
+		}
+		mViewPager = (ViewPager) bannerView.findViewById(R.id.viewPager);
+		bannerAdapter = new BannerAdapter(mImageList);
+		mViewPager.setAdapter(bannerAdapter);
+		// 设置广告条跳转时，广告语和状态语的变化
+		mViewPager.setOnPageChangeListener(new BannerListener());
+
+		// 初始化广告条，当前索引Integer.MAX_VALUE的一半
+		int index = (Integer.MAX_VALUE / 2)
+				- (Integer.MAX_VALUE / 2 % mImageList.size());
+		mViewPager.setCurrentItem(index);
+//		startBanner();
+	}
+
+	/**
+	 * 设置没有数据时的banner
+	 */
+	private void setNoDataBanner() {
+		// Drawable bannerDefault = getResources().getDrawable(
+		// R.drawable.ic_launcher);
+		// mImageList = new ArrayList<ImageView>();
+		// ImageView mImageView = new ImageView(getActivity());
+		// ImageUtils.getNetImage("", mImageView, null, bannerDefault, 0);
+		// mImageList.add(mImageView);
+		// bannerAdapter.setBanner(mImageList);
+	}
+
+	/**
+	 * 设置banner播放
+	 */
+	private void startBanner() {
+		final Handler adHandler = new Handler() {
+			public void handleMessage(Message msg) {
+				if (msg.what == 1) {
+					mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1);
+				}
+				super.handleMessage(msg);
+			};
+		};
+		Timer timer = new Timer();
+		TimerTask task = new TimerTask() {
+			@Override
+			public void run() {
+				// 需要做的事:发送消息
+				Message message = new Message();
+				message.what = 1;
+				adHandler.sendMessage(message);
+			}
+		};
+		timer.schedule(task, 1000, 3000);
+
+		// 开启子线程，让广告条以2秒的频率循环播放
+		// new Thread(new Runnable() {
+		//
+		// @Override
+		// public void run() {
+		// SystemClock.sleep(30000);
+		// getActivity().runOnUiThread(new Runnable() {
+		// public void run() {
+		// mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1);
+		// }
+		// });
+		// }
+		// }).start();
+	}
+
+	private void sendRequest(int pageNum) {
+		if (pageNum == 1) {
+			adapter.clearList();
+			adapter.notifyDataSetChanged();
+		}
+		hotFragmentApi.bannerRequest();
+		hotFragmentApi.hotListRequest(pageNum);
+	}
+
+	Handler adHander = new Handler() {
+		public void handleMessage(Message msg) {
+			setBanner(adResult.getAdList());
+		};
+	};
+	ADResult adResult;
+
+	/**
+	 * 获得数据后的处理
+	 * 
+	 * @param msg
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public void getDataForView(Message msg) {
+		super.getDataForView(msg);
+		switch (msg.arg1) {
+		case HotFragmentApi.LOAD_BANNER_LIST:
+			adResult = ((BaseEntity<ADResult>) msg.obj).result;
+			if (null != adResult && adResult.getAdList().size() > 0) {
+				adHander.sendEmptyMessage(0);
+//				setBanner(adResult.getAdList());
+			} else {
+				// setNoDataBanner();
+			}
+			break;
+		case HotFragmentApi.LOAD_HOT_LIST:
+			HotListResult videoResult = ((BaseEntity<HotListResult>) msg.obj).result;
+			List<HotListItem> hotListItems = videoResult.getHotListItems();
+			if (pageNum == 1) {
+				adapter.setList(hotListItems);
+			} else {
+				adapter.addList(hotListItems);
+			}
+			adapter.notifyDataSetChanged();
+			break;
+		default:
+			break;
+		}
+
+	}
+
+	/**
+	 * 数据返回错误处理
+	 */
+	@Override
+	public void getDataError(Message msg) {
+		super.getDataError(msg);
+		Log.e("", "-------4444444--------");
+	}
+
+	@Override
+	public void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		if (null != timer) {
+			timer.cancel();
+		}
+	}
+
+	// 如果不想用下拉刷新这个特性，只是瀑布流，可以用这个：MultiColumnListView 一样的用法
+	public static HotFragment newInstance() {
+		HotFragment fragment = new HotFragment();
+		return fragment;
+	}
+}

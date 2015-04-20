@@ -1,0 +1,15 @@
+package com.msee.mseetv.module.login.result;
+
+import com.google.gson.annotations.SerializedName;
+import com.msee.mseetv.module.login.entity.LoginInfo;
+
+public class LoginResult {
+	@SerializedName("profile")
+	private String profile;
+
+	public String getProfile() {
+		return profile;
+	}
+	
+
+}

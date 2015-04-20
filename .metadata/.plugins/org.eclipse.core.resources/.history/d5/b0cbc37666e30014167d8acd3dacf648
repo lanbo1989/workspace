@@ -1,0 +1,57 @@
+package com.msee.mseetv.module.user.api;
+
+import com.google.gson.annotations.SerializedName;
+
+public class UserInfo {
+	@SerializedName("fans_vip_level")
+	private int fansVipLevel;
+	@SerializedName("is_new_mail")
+	private String isNewMail;
+	@SerializedName("ad_type")
+	private int adType;
+	@SerializedName("ad_otherid")
+	private long adOtherId;
+	@SerializedName("ad_url")
+	private String adUrl;
+
+	public void setAdId(long adId) {
+		this.adId = adId;
+	}
+
+	public void setAdPhoto(String adPhoto) {
+		this.adPhoto = adPhoto;
+	}
+
+	public void setAdType(int adType) {
+		this.adType = adType;
+	}
+
+	public void setAdOtherId(long adOtherId) {
+		this.adOtherId = adOtherId;
+	}
+
+	public void setAdUrl(String adUrl) {
+		this.adUrl = adUrl;
+	}
+
+	public long getAdId() {
+		return adId;
+	}
+
+	public String getAdPhoto() {
+		return adPhoto;
+	}
+
+	public int getAdType() {
+		return adType;
+	}
+
+	public long getAdOtherId() {
+		return adOtherId;
+	}
+
+	public String getAdUrl() {
+		return adUrl;
+	}
+
+}

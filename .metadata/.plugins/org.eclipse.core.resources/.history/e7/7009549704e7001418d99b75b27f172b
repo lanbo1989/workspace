@@ -1,0 +1,65 @@
+package com.msee.mseetv.module.home.api;
+
+import java.util.HashMap;
+
+import com.android.volley.Request.Method;
+import com.google.gson.reflect.TypeToken;
+import com.msee.mseetv.base.BaseAPI;
+import com.msee.mseetv.base.BaseEntity;
+import com.msee.mseetv.base.BaseParameter;
+import com.msee.mseetv.http.GetDataHandler;
+import com.msee.mseetv.module.home.result.ADResult;
+import com.msee.mseetv.module.home.result.HotListResult;
+
+public class BeautyFragmentApi extends BaseAPI {
+
+	private static final String TAG = "BeautyFragmentApi";
+
+	private static final String URL_BEAUTY_LIST = "/ms15/circle/girllist?";
+
+	public static final int LOAD_BANNER_LIST = 0;
+
+	private GetDataHandler mGetDataHandler;
+
+	public BeautyFragmentApi(GetDataHandler mGetDataHandler) {
+		this.mGetDataHandler = mGetDataHandler;
+	}
+
+	/**
+	 * 发送banner列表请求
+	 */
+	public void bannerRequest() {
+		BaseParameter baseParameter = new BaseParameter();
+		baseParameter.setMethod(Method.GET);
+		baseParameter.setArg(LOAD_BANNER_LIST);
+		baseParameter.setTag(TAG);
+		baseParameter.setGetDataHandler(mGetDataHandler);
+		baseParameter.setUrl(URL_AD_LIST);
+		java.lang.reflect.Type type = new TypeToken<BaseEntity<ADResult>>() {
+		}.getType();
+		baseParameter.setType(type);
+		excuteHttp(baseParameter);
+	}
+
+	/**
+	 * 发送热门列表
+	 */
+	public void hotListRequest(int pageNum) {
+		BaseParameter baseParameter = new BaseParameter();
+		baseParameter.setMethod(Method.GET);
+		baseParameter.setArg(LOAD_HOT_LIST);
+		baseParameter.setTag(TAG);
+		baseParameter.setGetDataHandler(mGetDataHandler);
+		baseParameter.setUrl(URL_HOT_LIST);
+		HashMap<String, Object> hashMap = new HashMap<String, Object>();
+		hashMap.put("page", pageNum);
+		baseParameter.setGetParamsData(hashMap);
+		java.lang.reflect.Type type = new TypeToken<BaseEntity<HotListResult>>() {
+		}.getType();
+		baseParameter.setType(type);
+		excuteHttp(baseParameter);
+		
+	}
+
+
+}

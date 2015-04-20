@@ -1,0 +1,158 @@
+package com.msee.mseetv.utils;
+
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.widget.Toast;
+
+import com.msee.mseetv.MseeApplication;
+import com.msee.mseetv.common.Common;
+
+public class Utils {
+
+	/**
+	 * 判断是否登录过期
+	 */
+	public static void isLogout() {
+		long sysTime = System.currentTimeMillis();
+		String ei = Utils.getData("expiresIn");
+		if (!Utils.checkString(ei)) {
+			long expiresIn = Long.valueOf(Utils.getData("expiresIn"));
+			long loginTime = Long.valueOf(Utils.getData("loginTime"));
+			expiresIn = sysTime + expiresIn;
+			if (expiresIn >= loginTime) {
+				Common.isLoginExpiresIn = false;
+			} else {
+				Common.isLoginExpiresIn = true;
+			}
+		} else {
+			Common.isLoginExpiresIn = true;
+		}
+	}
+
+	/**
+	 * 判断网络
+	 * 
+	 * @param context
+	 * @return
+	 */
+	public static boolean isNetworkConnected() {
+		Context context = MseeApplication.getInstance();
+
+		if (context != null) {
+			ConnectivityManager mConnectivityManager = (ConnectivityManager) context
+					.getSystemService(Context.CONNECTIVITY_SERVICE);
+			NetworkInfo mNetworkInfo = mConnectivityManager
+					.getActiveNetworkInfo();
+			if (mNetworkInfo != null) {
+				return mNetworkInfo.isAvailable();
+			}
+		}
+		return false;
+	}
+
+	public static void Toast(String str) {
+		Toast.makeText(MseeApplication.getInstance(), str, Toast.LENGTH_SHORT)
+				.show();
+	}
+
+	/**
+	 * 获取应用版本号
+	 * 
+	 * @param context
+	 * @return
+	 */
+	public static String getVerName(Context context) {
+		try {
+			return context.getPackageManager().getPackageInfo(
+					context.getPackageName(), 0).versionName;
+		} catch (NameNotFoundException e) {
+		}
+		return "";
+	}
+
+	/**
+	 * 换算 强制按东八区计算
+	 * 
+	 * @param miao
+	 * @return
+	 */
+	public static String getDetailTime(String miao) {
+		long temp = Long.parseLong(miao);
+		TimeZone tz = TimeZone.getTimeZone("Asia/Shanghai");
+		Locale loc = new Locale("zh", "CN");
+		Date d = new Date(temp);
+
+		// 设置日期输出的格式
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm", loc);
+		df.setTimeZone(tz);
+		// 格式化输出
+		return df.format(d);
+	}
+
+	/**
+	 * 将字符串转成MD5值
+	 * 
+	 * @param string
+	 * @return
+	 */
+	public static String stringToMD5(String string) {
+		byte[] hash;
+
+		try {
+			hash = MessageDigest.getInstance("MD5").digest(
+					string.getBytes("UTF-8"));
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			return null;
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		StringBuilder hex = new StringBuilder(hash.length * 2);
+		for (byte b : hash) {
+			if ((b & 0xFF) < 0x10)
+				hex.append("0");
+			hex.append(Integer.toHexString(b & 0xFF));
+		}
+
+		return hex.toString();
+	}
+
+	public static void setData(String name, String verString) {
+		SharedPreferences sp = MseeApplication.getInstance()
+				.getSharedPreferences(name, 0);
+		Editor editor = sp.edit();
+		editor.putString(name, verString);
+		editor.commit();
+	}
+
+	public static String getData(String name) {
+		SharedPreferences sp = MseeApplication.getInstance()
+				.getSharedPreferences(name, 0);
+		return sp.getString(name, null);
+	}
+
+	/**
+	 * 判断字符串是否为空
+	 */
+	public static boolean checkString(String str) {
+		if (str == null || "".equals(str.trim()) || "null".equals(str.trim())) {
+			return true;
+		}
+		return false;
+	}
+
+}

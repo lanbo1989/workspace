@@ -1,0 +1,76 @@
+package com.msee.mseetv.http;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+
+import com.android.volley.Response.Listener;
+import com.msee.mseetv.base.BaseAPI;
+import com.msee.mseetv.base.BaseEntity;
+import com.msee.mseetv.utils.L;
+
+public class ResponseListener<T> implements Listener<T> {
+
+	private static final String TAG = "ResponseListener";
+	private Handler handler;
+	private Message msg;
+
+	public ResponseListener(Message message) {
+		this.msg = message;
+		handler = msg.getTarget();
+	}
+
+	@Override
+	public void onResponse(T response) {
+		Log.e("", "|"+response.toString()+"|");
+		if (null != response && (response instanceof BaseEntity)) {
+			int msgWhat;
+			BaseEntity<T> baseEntity = (BaseEntity<T>) response;
+			if (baseEntity.status.equals("200")) {
+				// handler 发送请求成功消息，将返回值带回
+				msgWhat = BaseAPI.REQUEST_SUCCESS;
+			} else {
+				// handler 发送请求成功，但返回信息错误的消息，将提示内容带回 接口访问失败
+				msgWhat = BaseAPI.REQUEST_FAILED;
+			}
+			Message message = new Message();
+			message.what = msgWhat;
+			message.arg1 = msg.arg1;
+			message.obj = response;
+			handler.sendMessage(message);
+		} else if(null != response && (response instanceof JSONObject)){
+			Message message = new Message();
+			try {
+				int msgwhat;
+				String status = ((JSONObject)response).getString("status");
+				L.v(TAG, "response", status);
+				if(status.equals("200")){
+					msgwhat = BaseAPI.REQUEST_SUCCESS;
+				}else{
+					msgwhat = BaseAPI.REQUEST_FAILED;
+				}
+				L.v(TAG, "response", response.toString());
+				String msginfo =  ((JSONObject)response).getString("msg");
+				message.what = msgwhat;
+				message.arg1 = msg.arg1;
+				message.obj = msginfo;
+			} catch (JSONException e) {
+				message.what = BaseAPI.REQUEST_FAILED;
+				message.arg1 = msg.arg1;
+				e.printStackTrace();
+			}
+			handler.sendMessage(message);
+		}else {
+			// handler 发送请求成功消息，但无返回信息 接口访问失败
+			Message message = new Message();
+			message.what = BaseAPI.REQUEST_FAILED;
+			message.arg1 = msg.arg1;
+//			message.obj = response;
+			handler.sendMessage(message);
+		}
+	}
+
+}

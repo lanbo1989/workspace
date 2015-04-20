@@ -1,0 +1,7 @@
+package com.msee.mseetv.module.register.ui;
+
+import com.msee.mseetv.base.BaseActivity;
+
+public class ForgetPassWordActivity extends BaseActivity{
+
+}

@@ -1,0 +1,23 @@
+package com.msee.mseetv.module.login.entity;
+
+import com.google.gson.annotations.SerializedName;
+
+public class LoginInfo {
+	@SerializedName("state")
+	private boolean state;
+	@SerializedName("profile")
+	private String proFile;
+	@SerializedName("msg")
+	private String msg;
+	public boolean isState() {
+		return state;
+	}
+	public String getProFile() {
+		return proFile;
+	}
+	public String getMsg() {
+		return msg;
+	}
+	
+
+}

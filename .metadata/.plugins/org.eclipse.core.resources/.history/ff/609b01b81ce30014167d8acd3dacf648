@@ -1,0 +1,14 @@
+package com.msee.mseetv.module.register.result;
+
+import com.google.gson.annotations.SerializedName;
+
+public class RegistResult {
+	@SerializedName("profile")
+	private String profile;
+
+	public String getProfile() {
+		return profile;
+	}
+	
+
+}

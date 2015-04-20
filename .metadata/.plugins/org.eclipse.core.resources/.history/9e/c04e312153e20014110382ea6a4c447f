@@ -1,0 +1,20 @@
+package com.msee.mseetv.base;
+
+import com.google.gson.annotations.SerializedName;
+
+public class BaseEntity<T> {
+	private static final long serialVersionUID = 1L;
+	@SerializedName("status")
+	public String status; // 请求返回码
+	@SerializedName("msg")
+	public String msg; // 返回信息
+	@SerializedName("info")
+	public String info; //
+	@SerializedName("code")
+	public String code;// 获取accessToken之前需先获取到code
+	@SerializedName("result")
+	public T result; // 可用报文信息
+	@SerializedName("userLogin")
+	public T userLogin; // 可用报文信息
+	
+}

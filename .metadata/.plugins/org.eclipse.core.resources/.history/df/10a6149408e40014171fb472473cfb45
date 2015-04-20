@@ -1,0 +1,42 @@
+package com.msee.mseetv.module.home.api;
+
+import java.util.HashMap;
+
+import com.android.volley.Request.Method;
+import com.google.gson.reflect.TypeToken;
+import com.msee.mseetv.base.BaseAPI;
+import com.msee.mseetv.base.BaseEntity;
+import com.msee.mseetv.base.BaseParameter;
+import com.msee.mseetv.module.home.entity.SystemMessage;
+
+public class HomeApi extends BaseAPI {
+
+	private static final String TAG = "HomeAPI";
+	private static final String URL_HOT_MESSAGE = "/ms/circle/msg?";
+	public static final int LOAD_MESSAGE_LIST = 0;
+
+	private GetDataHandler mGetDataHandler;
+
+	public HomeApi(GetDataHandler mGetDataHandler) {
+		this.mGetDataHandler = mGetDataHandler;
+	}
+
+	/**
+	 * 发送系统列表请求
+	 */
+	public void sendHotMessageList() {
+		BaseParameter baseParameter = new BaseParameter();
+		baseParameter.setMethod(Method.GET);
+		baseParameter.setArg(LOAD_MESSAGE_LIST);
+		baseParameter.setTag(TAG);
+		baseParameter.setGetDataHandler(mGetDataHandler);
+		baseParameter.setUrl(URL_HOT_MESSAGE);
+		java.lang.reflect.Type type = new TypeToken<BaseEntity<SystemMessage>>() {
+		}.getType();
+		HashMap<String, Object> hashMap = new HashMap<String, Object>();
+		hashMap.put("lasttime", System.currentTimeMillis());
+		baseParameter.setType(type);
+		excuteHttp(baseParameter);
+	}
+
+}

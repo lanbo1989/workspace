@@ -1,0 +1,17 @@
+package com.msee.mseetv.module.register.ui;
+
+import android.os.Bundle;
+
+import com.msee.mseetv.base.BaseActivity;
+
+public class ForgetPassWordActivity extends BaseActivity {
+	@Override
+	protected void onCreate(Bundle arg0) {
+		// TODO Auto-generated method stub
+		super.onCreate(arg0);
+		setContentView(R.layout.f);
+	}
+
+	public void onClick(android.view.View v) {
+	};
+}

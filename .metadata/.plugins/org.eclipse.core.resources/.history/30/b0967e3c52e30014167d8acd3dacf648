@@ -1,0 +1,7 @@
+package com.msee.mseetv.base;
+
+
+public class BaseParameter {
+	private int method;
+	private int arg;
+}

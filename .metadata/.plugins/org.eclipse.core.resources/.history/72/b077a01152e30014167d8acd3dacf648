@@ -1,0 +1,15 @@
+package com.msee.mseetv.base;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Handler;
+import android.util.Log;
+
+public class BaseParameter {
+    
+}

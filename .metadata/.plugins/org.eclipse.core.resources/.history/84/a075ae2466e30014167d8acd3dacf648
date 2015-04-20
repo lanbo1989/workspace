@@ -1,0 +1,225 @@
+package com.msee.mseetv.module.home.fragment;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.actionbarsherlock.app.SherlockFragment;
+import com.huewu.pla.lib.MultiColumnPullToRefreshListView;
+import com.huewu.pla.lib.MultiColumnPullToRefreshListView.OnRefreshListener;
+import com.huewu.pla.lib.internal.PLA_AbsListView;
+import com.huewu.pla.lib.internal.PLA_AbsListView.OnScrollListener;
+import com.msee.mseetv.R;
+import com.msee.mseetv.base.BaseAPI;
+import com.msee.mseetv.module.home.adapter.WaterfallAdapter;
+import com.msee.mseetv.module.home.entity.HotListItem;
+import com.msee.mseetv.utils.ImageUtils;
+import com.msee.mseetv.utils.L;
+
+public class MyFragment extends SherlockFragment {
+	private MultiColumnPullToRefreshListView waterfallView;// 可以把它当成一个listView
+	private static final String TAG = "OnLineFragment";
+	private static final int LOAD_VIDEOLIST = 0;
+	private Handler handler;
+	private View rootView, mHeaderView;
+	private ArrayList<String> imageList = new ArrayList<String>();
+	private WaterfallAdapter adapter;
+	private int pageNum = 1;
+	private LayoutInflater inflater;
+	private ImageView mRowIcon1, mRowIcon2, mRowIcon3, mBeautyMcon1,
+			mBeautyMcon2, mBeautyMcon3;
+	private TextView mBeautyName1, mBeautyName2, mBeautyName3;
+	private List<HotListItem> videoInfos;
+	private boolean isLastRow;
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		this.inflater = inflater;
+		rootView = inflater.inflate(R.layout.my_fragment, null);
+		ImageView imageView = (ImageView) rootView
+				.findViewById(R.id.imageView2);
+		Drawable defaultDrawable = getResources().getDrawable(
+				R.drawable.ic_launcher);
+		ImageUtils.getNetImage("http://p2.qhimg.com/t01a3045db6e5822319.jpg",
+				imageView, null, defaultDrawable, 90);
+		// initView();
+		// initHandler();
+		// getList(pageNum);
+		return rootView;
+	}
+
+	private void initView() {
+		waterfallView = (MultiColumnPullToRefreshListView) rootView
+				.findViewById(R.id.list);
+		initHeaderView();
+		waterfallView.setColumnNumber(3);
+		adapter = new WaterfallAdapter(getActivity());
+		waterfallView.setAdapter(adapter);
+		waterfallView.setOnRefreshListener(new OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				// TODO Auto-generated method stub
+				// 下拉刷新要做的事
+				pageNum = 1;
+				adapter.clearList();
+				imageList.clear();
+				getList(pageNum);
+				// 刷新完成后记得调用这个
+				waterfallView.onRefreshComplete();
+			}
+		});
+		waterfallView.setOnScrollListener(new OnScrollListener() {
+			@Override
+			public void onScrollStateChanged(PLA_AbsListView view,
+					int scrollState) {
+				// TODO Auto-generated method stub
+				// 正在滚动时回调，回调2-3次，手指没抛则回调2次。scrollState = 2的这次不回调
+				// 回调顺序如下
+				// 第1次：scrollState = SCROLL_STATE_TOUCH_SCROLL(1) 正在滚动
+				// 第2次：scrollState = SCROLL_STATE_FLING(2)
+				// 手指做了抛的动作（手指离开屏幕前，用力滑了一下）
+				// 第3次：scrollState = SCROLL_STATE_IDLE(0) 停止滚动
+
+				// 当滚到最后一行且停止滚动时，执行加载
+				if (isLastRow
+						&& scrollState == PLA_AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
+					// 加载元素
+					getList(pageNum++);
+					isLastRow = false;
+				}
+
+			}
+
+			@Override
+			public void onScroll(PLA_AbsListView view, int firstVisibleItem,
+					int visibleItemCount, int totalItemCount) {
+				// TODO Auto-generated method stub
+				// 滚动时一直回调，直到停止滚动时才停止回调。单击时回调一次。
+				// firstVisibleItem：当前能看见的第一个列表项ID（从0开始）
+				// visibleItemCount：当前能看见的列表项个数（小半个也算）
+				// totalItemCount：列表项共数
+
+				// 判断是否滚到最后一行
+				if (firstVisibleItem + visibleItemCount == totalItemCount
+						&& totalItemCount > 0) {
+					isLastRow = true;
+				}
+			}
+		});
+	}
+
+	/**
+	 * 初始化头部三个特殊控件
+	 */
+	private void initHeaderView() {
+		mHeaderView = inflater.inflate(R.layout.online_hearder_view, null);
+		waterfallView.addHeaderView(mHeaderView);
+		mRowIcon1 = (ImageView) mHeaderView.findViewById(R.id.row_icon1);
+		mRowIcon2 = (ImageView) mHeaderView.findViewById(R.id.row_icon2);
+		mRowIcon3 = (ImageView) mHeaderView.findViewById(R.id.row_icon3);
+		mBeautyMcon1 = (ImageView) mHeaderView.findViewById(R.id.beauty_icon1);
+		mBeautyMcon2 = (ImageView) mHeaderView.findViewById(R.id.beauty_icon2);
+		mBeautyMcon3 = (ImageView) mHeaderView.findViewById(R.id.beauty_icon3);
+		mBeautyName1 = (TextView) mHeaderView.findViewById(R.id.beauty_name1);
+		mBeautyName2 = (TextView) mHeaderView.findViewById(R.id.beauty_name2);
+		mBeautyName3 = (TextView) mHeaderView.findViewById(R.id.beauty_name3);
+	}
+
+	/**
+	 * 设置头部三个特殊控件
+	 * 
+	 * @param videoInfos
+	 *            列表页数据
+	 */
+	private void setHeaderView(List<HotListItem> videoInfos) {
+		// Utils.getNetImage(videoInfos.get(0).getImg(), mRowIcon1, null);
+		// Utils.getNetImage(videoInfos.get(1).getImg(), mRowIcon2, null);
+		// Utils.getNetImage(videoInfos.get(2).getImg(), mRowIcon3, null);
+		mBeautyMcon1.setImageResource(R.drawable.ic_launcher);
+		mBeautyMcon2.setImageResource(R.drawable.ic_launcher);
+		mBeautyMcon3.setImageResource(R.drawable.ic_launcher);
+		mBeautyName1.setText("美女名字");
+		mBeautyName2.setText("美女名字");
+		mBeautyName3.setText("美女名字");
+	}
+
+	/**
+	 * 获取列表也数据
+	 * 
+	 * @param pageNum
+	 *            页码
+	 */
+	private void getList(int pageNum) {
+		Message loadVideoMsg = new Message();
+		loadVideoMsg.arg1 = LOAD_VIDEOLIST;
+		loadVideoMsg.setTarget(handler);
+		// HotFragmentApi.getVideoByCategory(loadVideoMsg, TAG, 3, pageNum);
+	}
+
+	/**
+	 * 数据请求返回处理
+	 */
+	private void initHandler() {
+		handler = new Handler() {
+			@Override
+			public void handleMessage(Message msg) {
+				switch (msg.what) {
+				case BaseAPI.REQUEST_SUCCESS:
+					switch (msg.arg1) {
+					case LOAD_VIDEOLIST:
+						L.v(TAG, "LOAD_VIDEOLIST", "success");
+						// HotListResult videoResult =
+						// ((BaseEntity<HotListResult>) msg.obj).result;
+						// videoInfos = videoResult.getVideo_list();
+						// setHeaderView(videoInfos);
+						// for (int i = 3; i < videoInfos.size(); i++) {
+						// L.v(TAG, "LOAD_VIDEOLIST", videoInfos.get(i)
+						// .getImg());
+						// imageList.add(videoInfos.get(i).getImg());
+						// }
+						// adapter.addList(imageList);
+						break;
+					default:
+						break;
+					}
+					break;
+				case BaseAPI.REQUEST_FAILED:
+					switch (msg.arg1) {
+					case LOAD_VIDEOLIST:
+						Toast.makeText(getActivity(), "加载视频列表失败",
+								Toast.LENGTH_SHORT).show();
+						break;
+					default:
+						break;
+					}
+					break;
+				default:
+					break;
+				}
+				super.handleMessage(msg);
+			}
+		};
+	}
+
+	@Override
+	public void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+	}
+
+	public static MyFragment newInstance() {
+		MyFragment fragment = new MyFragment();
+		return fragment;
+	}
+}

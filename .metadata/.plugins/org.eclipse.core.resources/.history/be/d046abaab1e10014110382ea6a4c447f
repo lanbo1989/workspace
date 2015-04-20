@@ -1,0 +1,20 @@
+package com.msee.mseetv.base;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.msee.mseetv.module.home.api.GetDataHandler;
+
+public class BaseActivity extends SherlockFragmentActivity {
+	public LayoutInflater inflater = null;
+	public GetDataHandler mGetDataHandler = null;
+
+	@Override
+	protected void onCreate(Bundle arg0) {
+		mGetDataHandler = new GetDataHandler(this);
+		initView();
+		super.onCreate(arg0);
+	}
+
+}

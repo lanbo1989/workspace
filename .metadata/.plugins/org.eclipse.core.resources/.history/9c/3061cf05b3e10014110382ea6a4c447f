@@ -1,0 +1,37 @@
+package com.msee.mseetv.module.home.api;
+
+import android.os.Handler;
+import android.os.Message;
+
+import com.msee.mseetv.base.BaseAPI;
+import com.msee.mseetv.base.BaseActivity;
+import com.msee.mseetv.base.BaseFrgment;
+
+public class GetDataHandler extends Handler {
+	private BaseFrgment baseFrgment;
+	private BaseActivity baseActivity;
+
+	public GetDataHandler(BaseFrgment baseFrgment) {
+		this.baseFrgment = baseFrgment;
+	}
+
+	public GetDataHandler(BaseActivity baseActivity) {
+		this.baseActivity = baseActivity;
+	}
+
+	@Override
+	public void handleMessage(Message msg) {
+		switch (msg.what) {
+		case BaseAPI.REQUEST_SUCCESS:
+			baseFrgment.getDataForView(msg);
+			break;
+		case BaseAPI.REQUEST_FAILED:
+			baseFrgment.getDataError(msg);
+			break;
+		default:
+			break;
+		}
+		super.handleMessage(msg);
+	}
+
+}

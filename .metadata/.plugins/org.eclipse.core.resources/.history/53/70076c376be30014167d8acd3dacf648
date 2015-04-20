@@ -1,0 +1,80 @@
+package com.msee.mseetv;
+
+import java.util.ArrayList;
+
+import android.app.Activity;
+import android.app.Application;
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+
+import com.msee.mseetv.common.Common;
+import com.msee.mseetv.http.RequestManager;
+import com.msee.mseetv.utils.L;
+import com.msee.mseetv.utils.Utils;
+import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+
+public class MseeApplication extends Application {
+	public static Context applicationContext;
+	private static MseeApplication instance;
+	public Resources resources;
+	public ArrayList<Activity> activityList = new ArrayList<Activity>();
+
+	@Override
+	public void onCreate() {
+		super.onCreate();
+		initDisplayImageOptions();
+		instance = this;
+		Utils.isLogout();
+	}
+
+	/**
+	 * 初始化图片库
+	 */
+	private void initDisplayImageOptions() {
+		// 初始化图片加载库
+		DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+				// 图片存本地
+				.cacheInMemory(true).displayer(new FadeInBitmapDisplayer(50))
+				.bitmapConfig(Bitmap.Config.RGB_565)
+				.imageScaleType(ImageScaleType.EXACTLY) // default
+				.build();
+		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
+				this)
+				.memoryCache(new UsingFreqLimitedMemoryCache(16 * 1024 * 1024))
+				.defaultDisplayImageOptions(defaultOptions).build();
+		ImageLoader.getInstance().init(config);
+	}
+
+	public void initVolley() {
+		RequestManager.init();
+	}
+
+	public static MseeApplication getInstance() {
+		return instance;
+	}
+
+	public void exitApp() {
+		for (Activity activity : activityList) {
+			if (activity != null) {
+				L.v("MseeApplication", "exitApp", activity.getClass() + "");
+				activity.finish();
+				clearUserInfo();
+			}
+		}
+	}
+
+	public void clearUserInfo() {
+		if (Common.isLoginExpiresIn) {
+			Utils.setData("X-Auth-Token", "");
+			Utils.setData("expiresIn", "");
+			Utils.setData("X-Storage-Token", "");
+
+		}
+	}
+}

@@ -1,0 +1,11 @@
+package com.msee.mseetv.base;
+
+import com.msee.mseetv.module.home.api.GetDataHandler;
+
+
+public class BaseParameter {
+	private int method;
+	private int arg;
+	private GetDataHandler getDataHandler;
+	private String url;
+}

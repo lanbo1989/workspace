@@ -1,0 +1,64 @@
+package com.msee.mseetv.module.user.ui;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.actionbarsherlock.app.SherlockFragment;
+import com.huewu.pla.lib.MultiColumnPullToRefreshListView;
+import com.huewu.pla.lib.MultiColumnPullToRefreshListView.OnRefreshListener;
+import com.huewu.pla.lib.internal.PLA_AbsListView;
+import com.huewu.pla.lib.internal.PLA_AbsListView.OnScrollListener;
+import com.msee.mseetv.R;
+import com.msee.mseetv.base.BaseAPI;
+import com.msee.mseetv.module.home.adapter.WaterfallAdapter;
+import com.msee.mseetv.module.home.entity.HotListItem;
+import com.msee.mseetv.utils.ImageUtils;
+import com.msee.mseetv.utils.L;
+
+public class MyFragment extends SherlockFragment {
+	private static final String TAG = "MyFragment";
+	private View rootView;
+	private LayoutInflater inflater;
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		this.inflater = inflater;
+		rootView = inflater.inflate(R.layout.my_fragment, null);
+		ImageView imageView = (ImageView) rootView
+				.findViewById(R.id.imageView2);
+		Drawable defaultDrawable = getResources().getDrawable(
+				R.drawable.ic_launcher);
+		ImageUtils.getNetImage("http://p2.qhimg.com/t01a3045db6e5822319.jpg",
+				imageView, null, defaultDrawable, 90);
+		// initView();
+		// initHandler();
+		// getList(pageNum);
+		return rootView;
+	}
+
+	private void initView() {
+	}
+
+
+	@Override
+	public void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+	}
+
+	public static MyFragment newInstance() {
+		MyFragment fragment = new MyFragment();
+		return fragment;
+	}
+}

@@ -1,0 +1,211 @@
+package com.msee.mseetv.module.home.fragment;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.huewu.pla.lib.MultiColumnPullToRefreshListView;
+import com.huewu.pla.lib.MultiColumnPullToRefreshListView.OnRefreshListener;
+import com.huewu.pla.lib.internal.PLA_AbsListView;
+import com.huewu.pla.lib.internal.PLA_AbsListView.OnScrollListener;
+import com.msee.mseetv.R;
+import com.msee.mseetv.base.BaseEntity;
+import com.msee.mseetv.base.BaseFrgment;
+import com.msee.mseetv.module.home.adapter.WaterfallAdapter;
+import com.msee.mseetv.module.home.api.OnLineFragmentApi;
+import com.msee.mseetv.module.home.entity.HotListItem;
+import com.msee.mseetv.module.home.result.HotListResult;
+import com.msee.mseetv.utils.Utils;
+
+public class OnLineFragment extends BaseFrgment {
+	private MultiColumnPullToRefreshListView waterfallView;// 可以把它当成一个listView
+	private static final String TAG = "OnLineFragment";
+	private View rootView, mHeaderView;
+	private WaterfallAdapter adapter;
+	private int pageNum = 1;
+	private LayoutInflater inflater;
+	private ImageView mRowIcon1, mRowIcon2, mRowIcon3, mBeautyIcon1,
+			mBeautyIcon2, mBeautyIcon3;
+	private TextView mBeautyName1, mBeautyName2, mBeautyName3;
+	private boolean isLastRow;
+	private OnLineFragmentApi onLineFragmentApi;
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		this.inflater = inflater;
+		rootView = inflater.inflate(R.layout.home_fragment_online, null);
+		super.onCreateView(inflater, container, savedInstanceState);
+		onLineFragmentApi = new OnLineFragmentApi(mGetDataHandler);
+		sendRequest(pageNum);
+		return rootView;
+	}
+
+	public void initView() {
+		waterfallView = (MultiColumnPullToRefreshListView) rootView
+				.findViewById(R.id.list);
+		initHeaderView();
+		waterfallView.setColumnNumber(3);
+		adapter = new WaterfallAdapter(getActivity());
+		waterfallView.setAdapter(adapter);
+		waterfallView.setOnRefreshListener(new OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				// TODO Auto-generated method stub
+				// 下拉刷新要做的事
+				pageNum = 1;
+				sendRequest(pageNum);
+				// 刷新完成后记得调用这个
+				waterfallView.onRefreshComplete();
+			}
+		});
+		waterfallView.setOnScrollListener(new OnScrollListener() {
+			@Override
+			public void onScrollStateChanged(PLA_AbsListView view,
+					int scrollState) {
+				// TODO Auto-generated method stub
+				// 正在滚动时回调，回调2-3次，手指没抛则回调2次。scrollState = 2的这次不回调
+				// 回调顺序如下
+				// 第1次：scrollState = SCROLL_STATE_TOUCH_SCROLL(1) 正在滚动
+				// 第2次：scrollState = SCROLL_STATE_FLING(2)
+				// 手指做了抛的动作（手指离开屏幕前，用力滑了一下）
+				// 第3次：scrollState = SCROLL_STATE_IDLE(0) 停止滚动
+
+				// 当滚到最后一行且停止滚动时，执行加载
+				if (isLastRow
+						&& scrollState == PLA_AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
+					// 加载元素
+					sendRequest(pageNum++);
+					isLastRow = false;
+				}
+
+			}
+
+			@Override
+			public void onScroll(PLA_AbsListView view, int firstVisibleItem,
+					int visibleItemCount, int totalItemCount) {
+				// TODO Auto-generated method stub
+				// 滚动时一直回调，直到停止滚动时才停止回调。单击时回调一次。
+				// firstVisibleItem：当前能看见的第一个列表项ID（从0开始）
+				// visibleItemCount：当前能看见的列表项个数（小半个也算）
+				// totalItemCount：列表项共数
+
+				// 判断是否滚到最后一行
+				if (firstVisibleItem + visibleItemCount == totalItemCount
+						&& totalItemCount > 0) {
+					isLastRow = true;
+				}
+			}
+		});
+	}
+
+	/**
+	 * 初始化头部三个特殊控件
+	 */
+	private void initHeaderView() {
+		mHeaderView = inflater.inflate(R.layout.online_hearder_view, null);
+		waterfallView.addHeaderView(mHeaderView);
+		mRowIcon1 = (ImageView) mHeaderView.findViewById(R.id.row_icon1);
+		mRowIcon2 = (ImageView) mHeaderView.findViewById(R.id.row_icon2);
+		mRowIcon3 = (ImageView) mHeaderView.findViewById(R.id.row_icon3);
+		mBeautyIcon1 = (ImageView) mHeaderView.findViewById(R.id.beauty_icon1);
+		mBeautyIcon2 = (ImageView) mHeaderView.findViewById(R.id.beauty_icon2);
+		mBeautyIcon3 = (ImageView) mHeaderView.findViewById(R.id.beauty_icon3);
+		mBeautyName1 = (TextView) mHeaderView.findViewById(R.id.beauty_name1);
+		mBeautyName2 = (TextView) mHeaderView.findViewById(R.id.beauty_name2);
+		mBeautyName3 = (TextView) mHeaderView.findViewById(R.id.beauty_name3);
+	}
+
+	/**
+	 * 设置头部三个特殊控件
+	 * 
+	 * @param videoInfos
+	 *            列表页数据
+	 */
+	private void setHeaderView(List<HotListItem> hotListItems) {
+		Drawable defaultImage = getActivity().getResources().getDrawable(
+				R.drawable.load_default);
+		imageUtils.getNetImage(hotListItems.get(0).getWorkCover(), mRowIcon1,
+				null, defaultImage, 0);
+		imageUtils.getNetImage(hotListItems.get(1).getWorkCover(), mRowIcon2,
+				null, defaultImage, 0);
+		imageUtils.getNetImage(hotListItems.get(2).getWorkCover(), mRowIcon3,
+				null, defaultImage, 0);
+		imageUtils.getNetImage(hotListItems.get(0).getHeaderSmall(),
+				mBeautyIcon1, null, defaultImage, 90);
+		imageUtils.getNetImage(hotListItems.get(1).getHeaderSmall(),
+				mBeautyIcon2, null, defaultImage, 90);
+		imageUtils.getNetImage(hotListItems.get(2).getHeaderSmall(),
+				mBeautyIcon3, null, defaultImage, 90);
+		mBeautyName1.setText(hotListItems.get(0).getUserName());
+		mBeautyName2.setText(hotListItems.get(1).getUserName());
+		mBeautyName3.setText(hotListItems.get(2).getUserName());
+	}
+
+	/**
+	 * 获取列表页数据
+	 * 
+	 * @param pageNum
+	 *            页码
+	 */
+	private void sendRequest(int pageNum) {
+		if (pageNum == 1) {
+			adapter.clearList();
+			adapter.notifyDataSetChanged();
+		}
+		onLineFragmentApi.onLineListRequest(pageNum);
+	}
+
+	@Override
+	public void getDataForView(Message msg) {
+		super.getDataForView(msg);
+		switch (msg.arg1) {
+		case OnLineFragmentApi.LOAD_ON_LINE_LIST:
+			HotListResult hotListResult = ((BaseEntity<HotListResult>) msg.obj).result;
+			List<HotListItem> hotListItems = hotListResult.getHotListItems();
+			List<HotListItem> headerHotListItems = new ArrayList<HotListItem>();
+			if (pageNum == 1) {
+				for (int i = 0; i < 3; i++) {
+					headerHotListItems.add(hotListItems.get(i));
+					hotListItems.remove(i);
+				}
+				adapter.setList(hotListItems);
+				setHeaderView(headerHotListItems);
+			} else if (hotListResult.getTotal() <= adapter.getCount()) {
+				adapter.addList(hotListItems);
+			} else {
+				Utils.Toast("以加载全部数据！");
+			}
+			adapter.notifyDataSetChanged();
+			break;
+		default:
+			break;
+		}
+	}
+
+	@Override
+	public void getDataError(Message msg) {
+		// TODO Auto-generated method stub
+		super.getDataError(msg);
+	}
+
+	@Override
+	public void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+	}
+
+	public static OnLineFragment newInstance() {
+		OnLineFragment fragment = new OnLineFragment();
+		return fragment;
+	}
+}

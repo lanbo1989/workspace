@@ -1,0 +1,102 @@
+package com.msee.mseetv.module.login.api;
+
+import java.util.HashMap;
+
+import android.os.Message;
+
+import com.google.gson.reflect.TypeToken;
+import com.msee.mseetv.base.BaseAPI;
+import com.msee.mseetv.base.BaseEntity;
+import com.msee.mseetv.module.home.api.GetDataHandler;
+import com.msee.mseetv.module.login.result.LoginResult;
+import com.msee.mseetv.utils.Utils;
+
+public class LoginApi extends BaseAPI {
+
+	private static final String TAG = "LoginApi";
+	private static final String URL_LOGIN = "/ms15/account/mseelogin";
+	private static final String URL_GETTOKEN = "/ms15/account/mseetoken?";
+	public static final int LOAD_LOGIN = 0;
+	public static final int LOAD_GETTOKEN = 1;
+
+	private GetDataHandler mGetDataHandler;
+
+	public LoginApi(GetDataHandler mGetDataHandler) {
+		this.mGetDataHandler = mGetDataHandler;
+	}
+
+	/**
+	 * 发送登录请求
+	 */
+	public void sendLogin() {
+		// 发送滚动信息列表请求
+		Message loadLoginMsg = new Message();
+		loadLoginMsg.arg1 = LOAD_LOGIN;
+		loadLoginMsg.setTarget(mGetDataHandler);
+		java.lang.reflect.Type type = new TypeToken<BaseEntity<LoginResult>>() {
+		}.getType();
+		HashMap<String, String> paramsData = new HashMap<String, String>();
+		paramsData.put("login", "mdjlan123");
+		paramsData.put("password", Utils.stringToMD5("123456.."));
+		paramsData.put("remember", "1");
+		excuteHttpPost(URL_LOGIN, loadLoginMsg, TAG, type, paramsData);
+	}
+
+	/**
+	 * 发送登录请求
+	 */
+	public void sendGetToken() {
+		// 发送滚动信息列表请求
+		Message loadGetTokenMsg = new Message();
+		loadGetTokenMsg.arg1 = LOAD_GETTOKEN;
+		loadGetTokenMsg.setTarget(mGetDataHandler);
+		java.lang.reflect.Type type = new TypeToken<BaseEntity<LoginResult>>() {
+		}.getType();
+		HashMap<String, Object> paramsData = new HashMap<String, Object>();
+		excuteHttpGet(URL_GETTOKEN, loadGetTokenMsg, TAG, paramsData, type);
+	}
+
+	/**
+	 * 获取系统列表
+	 * 
+	 * @param msg
+	 * @param tag
+	 * @param pageNum
+	 */
+	public void getLoginInfo(Message msg, String tag) {
+		// get
+		// HashMap<String, Object> paramsData = new HashMap<String, Object>();
+		// Type type = new TypeToken<BaseEntity<LoginResult>>(){
+		//
+		// }.getType();
+		// // paramsData.put("login", "躺在云上吹风");
+		// // paramsData.put("password",Utils.stringToMD5("123456.."));
+		// // paramsData.put("remember", "1");
+		// paramsData.put("login", "msee_demo");
+		// paramsData.put("password", "43a601c2d95c6b8506ebda325b787c19");
+		// paramsData.put("remember", "1");
+		// excuteHttpGet(URL_LOGIN, msg, "",paramsData,type);
+
+		// post
+		// java.lang.reflect.Type type = new TypeToken<BaseEntity>() {
+		// }.getType();
+		// HashMap<String, String> paramsData = new HashMap<String, String>();
+		// // paramsData.put("login", "躺在云上吹风");
+		// // paramsData.put("password",Utils.stringToMD5("123456.."));
+		// // paramsData.put("remember", "1");
+		// paramsData.put("login", "msee_demo");
+		// paramsData.put("password", "43a601c2d95c6b8506ebda325b787c19");
+		// paramsData.put("remember", "1");
+		// excuteHttpPost(URL_LOGIN, msg,"",null,paramsData,type);
+
+		java.lang.reflect.Type type = new TypeToken<BaseEntity<LoginResult>>() {
+		}.getType();
+		HashMap<String, String> paramsData = new HashMap<String, String>();
+		paramsData.put("login", "mdjlan123");
+		paramsData.put("password", Utils.stringToMD5("123456.."));
+		paramsData.put("remember", "1");
+		excuteHttpPost(URL_LOGIN, msg, "", type, paramsData);
+
+	}
+
+}

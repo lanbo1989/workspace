@@ -1,0 +1,20 @@
+package com.msee.mseetv.module.login.result;
+
+import com.google.gson.annotations.SerializedName;
+
+public class LoginResult {
+	@SerializedName("profile")
+	private String profile;
+	@SerializedName("reason")
+	private String reason;
+	@SerializedName("storage_token")
+	private String storageToken;
+	@SerializedName("uuid")
+	private String uuid;
+
+	public String getProfile() {
+		return profile;
+	}
+	
+
+}

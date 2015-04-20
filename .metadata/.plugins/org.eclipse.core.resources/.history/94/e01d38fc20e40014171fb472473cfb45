@@ -1,0 +1,21 @@
+package com.msee.mseetv.module.home.result;
+
+import java.util.List;
+
+import com.google.gson.annotations.SerializedName;
+import com.msee.mseetv.module.home.entity.AD;
+
+public class ADResult {
+	@SerializedName("list_total")
+	public int total;
+	@SerializedName("list_page")
+	public int page;
+	@SerializedName("list_content")
+	public List<AD> adList;
+
+
+	public List<AD> getAdList() {
+		return adList;
+	}
+
+}

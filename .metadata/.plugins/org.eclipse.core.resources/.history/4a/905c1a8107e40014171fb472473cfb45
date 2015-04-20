@@ -1,0 +1,70 @@
+package com.msee.mseetv.module.home.api;
+
+import java.util.HashMap;
+
+import android.os.Message;
+
+import com.android.volley.Request.Method;
+import com.google.gson.reflect.TypeToken;
+import com.msee.mseetv.base.BaseAPI;
+import com.msee.mseetv.base.BaseEntity;
+import com.msee.mseetv.base.BaseParameter;
+import com.msee.mseetv.module.home.result.HotListResult;
+import com.msee.mseetv.module.login.result.LoginResult;
+import com.msee.mseetv.utils.Utils;
+
+public class HomeApi extends BaseAPI {
+
+	private static final String TAG = "HomeAPI";
+	private static final String URL_HOT_MESSAGE = "/ms/circle/msg?";
+	public static final int LOAD_MESSAGE_LIST = 0;
+
+	private GetDataHandler mGetDataHandler;
+
+	public HomeApi(GetDataHandler mGetDataHandler) {
+		this.mGetDataHandler = mGetDataHandler;
+	}
+
+	/**
+	 * 发送系统列表请求
+	 */
+	public void sendHotMessageList() {
+		// 发送滚动信息列表请求
+//		Message loadMessageMsg = new Message();
+//		loadMessageMsg.arg1 = LOAD_MESSAGE_LIST;
+//		loadMessageMsg.setTarget(mGetDataHandler);
+//		getHotMessageList(loadMessageMsg, TAG);
+		
+		BaseParameter baseParameter = new BaseParameter();
+		baseParameter.setMethod(Method.POST);
+		baseParameter.setArg(LOAD_MESSAGE_LIST);
+		baseParameter.setTag(TAG);
+		baseParameter.setGetDataHandler(mGetDataHandler);
+		baseParameter.setUrl(URL_LOGIN);
+		java.lang.reflect.Type type = new TypeToken<BaseEntity<LoginResult>>() {
+		}.getType();
+		baseParameter.setType(type);
+		HashMap<String, String> paramsData = new HashMap<String, String>();
+		paramsData.put("login", userName);
+		paramsData.put("password", Utils.stringToMD5(passWord));
+		paramsData.put("remember", "1");
+		baseParameter.setPostParamsData(paramsData);
+		excuteHttp(baseParameter);
+	}
+
+	/**
+	 * 获取系统列表
+	 * 
+	 * @param msg
+	 * @param tag
+	 * @param pageNum
+	 */
+	public void getHotMessageList(Message msg, String tag) {
+		java.lang.reflect.Type type = new TypeToken<BaseEntity<HotListResult>>() {
+		}.getType();
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		params.put("lasttime", System.currentTimeMillis());
+		excuteHttpGet(URL_HOT_MESSAGE, msg, tag, params, type);
+	}
+
+}

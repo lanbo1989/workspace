@@ -1,0 +1,111 @@
+package com.msee.mseetv.http;
+
+import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import android.text.TextUtils;
+import android.util.Log;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.Response.Listener;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.google.gson.Gson;
+import com.msee.mseetv.base.BaseEntity;
+import com.msee.mseetv.utils.L;
+import com.msee.mseetv.utils.Utils;
+
+public class JsonRequest<T> extends Request<T> {
+
+	private final Listener<T> mListener;
+	private Type type;
+	private Map<String, String> postdata;
+	private BaseEntity entity;
+
+	public JsonRequest(int method, String url, Listener<T> listener,
+			ErrorListener errorListener, Type type, Map<String, String> postData) {
+		super(method, url, errorListener);
+		this.mListener = listener;
+		this.type = type;
+		this.postdata = postData;
+	}
+
+	@Override
+	protected Map<String, String> getParams() throws AuthFailureError {
+		L.v("JsonRequest", "postData2222:", (null == postdata ? "null"
+				: postdata.toString()));
+		return postdata;
+	}
+
+	@Override
+	public Map<String, String> getHeaders() throws AuthFailureError {
+		HashMap<String, String> headers = new HashMap<String, String>();
+		String x_storage_token = Utils.getData("X-Storage-Token");
+		String x_auth_token =  Utils.getData("X-Auth-Token");
+		if (!Utils.checkString(x_auth_token)) {
+			headers.put("X-Auth-Token", x_auth_token);
+		}
+		else {
+			headers.put("X-Storage-Token", x_storage_token);
+		}
+		return headers;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	protected Response<T> parseNetworkResponse(NetworkResponse response) {
+		String json = null;
+		try {
+			HashMap<String, String> header = (HashMap<String, String>) response.headers;
+			String x_storage_token =  header.get("X-Storage-Token ");
+			if (!Utils.checkString(x_storage_token)) {
+				Utils.setData("X-Storage-Token",  x_storage_token);
+			}
+			String x_auth_token =  header.get("X-Auth-Token");
+			if (!Utils.checkString(x_auth_token)) {
+				Utils.setData("X-Auth-Token", x_auth_token);
+				
+				Utils.setData("expiresIn", x_auth_token);
+				
+				expires_in
+			}
+			json = new String(response.data,
+					HttpHeaderParser.parseCharset(response.headers));
+			L.v("JsonRequest", "parseNetworkResponse", json);
+			Gson gson = new Gson();
+			entity = gson.fromJson(json, type);
+			return (Response<T>) Response.success(entity,
+					HttpHeaderParser.parseCacheHeaders(response));
+		} catch (Exception e) {
+			e.printStackTrace();
+			// 可以再次处理公共的错误信息
+			if (!TextUtils.isEmpty(json)) {
+				e = new VolleyError(json);
+			}
+			return Response.error(new ParseError(e));
+		}
+
+	}
+
+	@Override
+	protected void deliverResponse(T response) {
+		if (null != mListener && null != response) {
+			mListener.onResponse(response);
+		}
+	}
+
+	@Override
+	public void deliverError(VolleyError error) {
+		if (null != mListener && null != error) {
+			mListener.onResponse((T) error);
+		}
+	}
+
+}

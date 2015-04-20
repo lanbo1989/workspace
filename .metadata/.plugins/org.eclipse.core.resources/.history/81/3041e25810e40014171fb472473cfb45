@@ -1,0 +1,164 @@
+package com.msee.mseetv.module.register.ui;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Message;
+import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.msee.mseetv.MseeApplication;
+import com.msee.mseetv.R;
+import com.msee.mseetv.base.BaseActivity;
+import com.msee.mseetv.base.BaseEntity;
+import com.msee.mseetv.module.register.api.RegistApi;
+import com.msee.mseetv.utils.Utils;
+
+public class RegistActivity extends BaseActivity {
+	private EditText mobileNumEdit, mobileCodeEdit, passWordEdit;
+	private ImageView blackBtn;
+	private TextView mobileCodeBtn, nextBtn;
+	private int time = 0;
+	private Timer timer = new Timer();
+	private TimerTask task;
+	private RegistApi registApi;
+	private String mobileNum, mobileCode, passWord;
+
+	@Override
+	protected void onCreate(Bundle arg0) {
+		super.onCreate(arg0);
+		MseeApplication.getInstance().activityList.add(this);
+		getSupportActionBar().hide();
+		setContentView(R.layout.activity_register);
+		initView();
+	}
+
+	private void initView() {
+		mobileNumEdit = (EditText) findViewById(R.id.mobile_num);
+		mobileCodeEdit = (EditText) findViewById(R.id.mobile_code);
+		passWordEdit = (EditText) findViewById(R.id.password);
+		mobileCodeBtn = (TextView) findViewById(R.id.mobile_code_btn);
+		blackBtn = (ImageView) findViewById(R.id.black_btn);
+		nextBtn = (TextView) findViewById(R.id.next_btn);
+		blackBtn.setOnClickListener(this);
+		nextBtn.setOnClickListener(this);
+		mobileCodeBtn.setOnClickListener(this);
+	}
+
+	public void getDataForView(Message msg) {
+		switch (msg.arg1) {
+		case RegistApi.LOAD_GETMOBILECODE:
+			Log.e("",
+					"=========="
+							+ ((BaseEntity<String>) msg.obj).msg.toString());
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	public void getDataError(Message msg) {
+		switch (msg.arg1) {
+		case RegistApi.LOAD_GETMOBILECODE:
+			Utils.Toast(((BaseEntity<String>) msg.obj).msg.toString());
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.black_btn:
+			finish();
+			break;
+		case R.id.next_btn:
+			mobileNum = mobileNumEdit.getText().toString();
+			mobileCode = mobileCodeEdit.getText().toString();
+			passWord = passWordEdit.getText().toString();
+			if (Utils.checkcompileString(Utils.MOBILEPHONECHECKREGEX,
+					mobileNum)) {
+				Utils.Toast("请填写正确手机号！");
+				break;
+			}
+
+			if (Utils.checkString(mobileCode) || mobileCode.length() != 5) {
+				Utils.Toast("请填写正确验证码！");
+				break;
+			}
+			if (Utils.checkString(passWord)) {
+				Utils.Toast("请填写密码！");
+				break;
+			}
+			Intent intent = new Intent();
+			intent.setClass(this, PerfectInformationActivity.class);
+			startActivity(intent);
+			break;
+		case R.id.getcode:
+			mobileNum = mobileNumEdit.getText().toString();
+			Log.e("",
+					"======="
+							+ Utils.checkcompileString(
+									Utils.MOBILEPHONECHECKREGEX, mobileNum));
+			if (!Utils.checkcompileString(Utils.MOBILEPHONECHECKREGEX,
+					mobileNum)) {
+				getMobileCodeRun();
+			} else {
+				Utils.Toast("请填写正确手机号！");
+				Toast.makeText(this, "请填写正确手机号1！", Toast.LENGTH_SHORT).show();
+			}
+			break;
+		default:
+			break;
+		}
+	};
+
+	/**
+	 * 获取手机验证码倒计时
+	 */
+	private void getMobileCodeRun() {
+		getMobileCode.setEnabled(false);
+		task = new TimerTask() {
+			@Override
+			public void run() {
+				runOnUiThread(new Runnable() { // UI thread
+					@Override
+					public void run() {
+						if (time <= 0) {
+							getMobileCode.setEnabled(true);
+							getMobileCode.setText("获取验证码");
+							getMobileCode
+									.setBackgroundResource(R.drawable.verification_code1);
+							registApi.sendMobileRegist(mobileNum);
+							task.cancel();
+						} else {
+							getMobileCode
+									.setBackgroundResource(R.drawable.verification_code2);
+							getMobileCode.setText("重新获取(" + time + ")");
+						}
+						time--;
+					}
+				});
+			}
+		};
+		time = 60;
+		timer.schedule(task, 0, 1000);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if (null != task) {
+			task.cancel();
+		}
+	}
+
+}

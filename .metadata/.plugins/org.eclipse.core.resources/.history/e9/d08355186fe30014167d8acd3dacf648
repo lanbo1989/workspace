@@ -1,0 +1,8 @@
+package com.msee.mseetv.http;
+
+public class Snippet {
+	public static void main(String[] args) {
+		settingBtn.setOnClickListener(this);
+	}
+}
+

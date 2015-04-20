@@ -1,0 +1,84 @@
+1428892009131	Rename type 'HomeApi'
+1428894533207	Rename type 'Snippet'
+1428898457269	Copy compilation unit
+1428898464271	Copy compilation unit
+1428898542306	Copy compilation unit
+1428903950639	Rename type 'Banner'
+1428904391773	Rename type 'BannerResult'
+1428904426244	Rename type 'VideoInfo'
+1428904497549	Rename type 'Video'
+1428904864034	Copy compilation unit
+1428906334634	Rename type 'VideoResult'
+1428906527350	Rename type 'MessageResult'
+1428910065370	Copy file
+1428911202069	Delete element
+1428911210859	Copy compilation unit
+1428917028267	Copy compilation unit
+1428917039860	Rename type 'HomeApi'
+1428920041499	Copy compilation unit
+1428920049126	Rename type 'HotListResult'
+1428920208128	Copy compilation unit
+1428920217886	Rename type 'AD'
+1428920241506	Copy compilation unit
+1428981091442	Move compilation unit
+1428991346929	Copy file
+1428991356474	Delete element
+1428994798691	Copy file
+1428997161433	Copy file
+1428997570032	Move file
+1429000882450	Copy compilation unit
+1429006868614	Rename resource 'become_ beautiful1.png'
+1429006874950	Rename resource 'become_ beautiful2.png'
+1429006895376	Copy file
+1429065437827	Copy compilation unit
+1429065452455	Rename type 'LoginApi'
+1429066281059	Rename type 'RegisterApi'
+1429067006790	Copy compilation unit
+1429067032458	Rename type 'LoginResult'
+1429082132074	Move compilation unit
+1429082161834	Copy file
+1429083604993	Copy file
+1429083619139	Copy file
+1429083627046	Copy file
+1429083641986	Copy file
+1429083651125	Rename resource 'qq_btn1.png'
+1429083660235	Rename resource 'qq_btn2.png'
+1429083668172	Rename resource 'sina_btn1.png'
+1429083674359	Rename resource 'sina_btn2.png'
+1429083686457	Rename resource 'weixin_btn1.png'
+1429083692252	Rename resource 'weixin_btn2.png'
+1429083697705	Rename resource 'username_bg.png'
+1429083721999	Rename resource 'password_bg.png'
+1429083746517	Rename resource 'login_btn2.png'
+1429083752489	Rename resource 'login_btn1.png'
+1429093305269	Rename resource 'login_commit_btn1.png'
+1429093314050	Rename resource 'login_commit_btn2.png'
+1429093323965	Rename resource 'login_commit_btn.xml'
+1429098848585	Copy compilation unit
+1429098856957	Delete element
+1429098870961	Copy compilation unit
+1429098879038	Delete element
+1429098918432	Copy compilation unit
+1429098924252	Rename type 'AD'
+1429099172223	Delete element
+1429102701712	Delete element
+1429105277531	Copy file
+1429105293835	Copy file
+1429106303329	Copy file
+1429106376295	Copy compilation unit
+1429106881550	Copy file
+1429106896705	Copy file
+1429106910292	Copy file
+1429107008380	Copy file
+1429107084898	Delete element
+1429107141457	Rename resource 'vman_btn.xml'
+1429109100210	Rename type 'RegisterActivity'
+1429109104660	Rename type 'Register1Activity'
+1429165661759	Rename type 'Regist1Activity'
+1429165831027	Rename resource 'activity_register1.xml'
+1429165913287	Rename resource 'register1_bg.png'
+1429165918881	Rename resource 'register2_bg.png'
+1429168295157	Rename type 'HotMessage'
+1429168652656	Rename type 'HotMessageResult'
+1429170111397	Copy compilation unit
+1429170118340	Delete element

@@ -1,0 +1,57 @@
+package com.msee.mseetv.module.home.entity;
+
+import com.google.gson.annotations.SerializedName;
+
+public class AD {
+	@SerializedName("ad_id")
+	private long adId;
+	@SerializedName("ad_photo")
+	private String adPhoto;
+	@SerializedName("ad_type")
+	private int adType;
+	@SerializedName("ad_otherid")
+	private long adOtherId;
+	@SerializedName("ad_url")
+	private String adUrl;
+
+	public void setAdId(long adId) {
+		this.adId = adId;
+	}
+
+	public void setAdPhoto(String adPhoto) {
+		this.adPhoto = adPhoto;
+	}
+
+	public void setAdType(int adType) {
+		this.adType = adType;
+	}
+
+	public void setAdOtherId(long adOtherId) {
+		this.adOtherId = adOtherId;
+	}
+
+	public void setAdUrl(String adUrl) {
+		this.adUrl = adUrl;
+	}
+
+	public long getAdId() {
+		return adId;
+	}
+
+	public String getAdPhoto() {
+		return adPhoto;
+	}
+
+	public int getAdType() {
+		return adType;
+	}
+
+	public long getAdOtherId() {
+		return adOtherId;
+	}
+
+	public String getAdUrl() {
+		return adUrl;
+	}
+
+}

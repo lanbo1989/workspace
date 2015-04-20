@@ -1,0 +1,160 @@
+package com.msee.mseetv.utils;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+
+import android.content.Context;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout.LayoutParams;
+import android.widget.Toast;
+
+import com.msee.mseetv.MseeApplication;
+import com.msee.mseetv.R;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+
+public class Utils {
+	/**
+	 * 判断网络
+	 * 
+	 * @param context
+	 * @return
+	 */
+	public static boolean isNetworkConnected() {
+		Context context = MseeApplication.getInstance();
+
+		if (context != null) {
+			ConnectivityManager mConnectivityManager = (ConnectivityManager) context
+					.getSystemService(Context.CONNECTIVITY_SERVICE);
+			NetworkInfo mNetworkInfo = mConnectivityManager
+					.getActiveNetworkInfo();
+			if (mNetworkInfo != null) {
+				return mNetworkInfo.isAvailable();
+			}
+		}
+		return false;
+	}
+
+	public static void Toast(String str) {
+		Toast.makeText(MseeApplication.getInstance(), str, Toast.LENGTH_SHORT)
+				.show();
+	}
+
+	/**
+	 * 获取应用版本号
+	 * 
+	 * @param context
+	 * @return
+	 */
+	public static String getVerName(Context context) {
+		try {
+			return context.getPackageManager().getPackageInfo(
+					context.getPackageName(), 0).versionName;
+		} catch (NameNotFoundException e) {
+		}
+		return "";
+	}
+
+	/**
+	 * 获取网络图片
+	 * 
+	 * @param imageUrl
+	 * @param imageView
+	 */
+	public static void getNetImage(String imageUrl, final ImageView imageView,
+			final ProgressBar progressBar,final Drawable drawable) {
+		ImageLoader.getInstance().displayImage(imageUrl, imageView,
+				new ImageLoadingListener() {
+					@Override
+					public void onLoadingStarted(String imageUri, View view) {
+
+						// 这儿初先初始化出来image所占的位置的大小，先把瀑布流固定住，这样瀑布流就不会因为图片加载出来后大小变化了
+						LayoutParams lp = (LayoutParams) imageView
+								.getLayoutParams();
+						// 多屏幕适配
+						int dWidth = 480;
+						int dHeight = 800;
+						float wscale = dWidth / 480.0f;
+						float hscale = dHeight / 800.0f;
+						lp.height = (int) (drawable.getIntrinsicHeight() * hscale);
+						lp.width = (int) (drawable.getIntrinsicHeight() * wscale);
+						imageView.setLayoutParams(lp);
+						imageView.setImageDrawable(drawable);
+						if (null != progressBar) {
+							progressBar.setVisibility(View.VISIBLE);
+						}
+					}
+
+					@Override
+					public void onLoadingFailed(String imageUri, View view,
+							FailReason failReason) {
+						String message = null;
+						switch (failReason.getType()) {
+						case IO_ERROR:
+							message = "Input/Output error";
+							break;
+						case DECODING_ERROR:
+							message = "can not be decoding";
+							break;
+						case NETWORK_DENIED:
+							message = "Downloads are denied";
+							break;
+						case OUT_OF_MEMORY:
+							message = "内存不足";
+							Toast(message);
+							break;
+						case UNKNOWN:
+							message = "Unknown error";
+							Toast(message);
+							break;
+						}
+						if (null != progressBar) {
+							progressBar.setVisibility(View.GONE);
+						}
+					}
+
+					@Override
+					public void onLoadingComplete(String imageUri, View view,
+							Bitmap loadedImage) {
+						if (null != progressBar) {
+							progressBar.setVisibility(View.GONE);
+						}
+					}
+
+					@Override
+					public void onLoadingCancelled(String paramString,
+							View paramView) {
+					}
+				});
+	}
+
+	/**
+	 * 换算 强制按东八区计算
+	 * 
+	 * @param miao
+	 * @return
+	 */
+	public static String getDetailTime(String miao) {
+		long temp = Long.parseLong(miao);
+		TimeZone tz = TimeZone.getTimeZone("Asia/Shanghai");
+		Locale loc = new Locale("zh", "CN");
+		Date d = new Date(temp);
+
+		// 设置日期输出的格式
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm", loc);
+		df.setTimeZone(tz);
+		// 格式化输出
+		return df.format(d);
+	}
+
+}

@@ -1,0 +1,47 @@
+package com.msee.mseetv.base;
+
+import android.os.Bundle;
+import android.os.Message;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+
+import com.actionbarsherlock.app.SherlockFragment;
+import com.msee.mseetv.R.id;
+import com.msee.mseetv.http.GetDataHandler;
+import com.msee.mseetv.utils.ImageUtils;
+
+public class BaseFrgment extends SherlockFragment implements OnClickListener {
+	public LayoutInflater inflater = null;
+	public int pageNum = 1;
+	public GetDataHandler mGetDataHandler = null;
+	public ImageUtils imageUtils;
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		this.inflater = inflater;
+		mGetDataHandler = new GetDataHandler(this);
+		initView();
+		return super.onCreateView(inflater, container, savedInstanceState);
+	}
+
+	public void initView() {
+
+	}
+
+	public void getDataForView(Message msg) {
+
+	}
+
+	public void getDataError(Message msg)
+	{
+		
+	}
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+
+	}
+}

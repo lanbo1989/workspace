@@ -1,0 +1,22 @@
+package com.msee.mseetv.module.login.result;
+
+import java.util.ArrayList;
+
+import com.google.gson.annotations.SerializedName;
+import com.msee.mseetv.module.home.entity.HotListItem;
+
+public class HotListResult {
+	@SerializedName("page_cnt")
+	private String page_cnt;
+	@SerializedName("hot_list")
+	private ArrayList<HotListItem> hotListItems;
+
+	public String getPage_cnt() {
+		return page_cnt;
+	}
+
+	public ArrayList<HotListItem> getHotListItems() {
+		return hotListItems;
+	}
+
+}

@@ -1,0 +1,17 @@
+package com.msee.mseetv.base;
+
+import java.lang.reflect.Type;
+import java.util.HashMap;
+
+import com.msee.mseetv.module.home.api.GetDataHandler;
+
+
+public class BaseParameter {
+	private int method;
+	private int arg;
+	private GetDataHandler getDataHandler;
+	private String url;
+	private HashMap<String, String> postParamsData;
+	private Type type;
+	private HashMap<String, Object> getParamsData;
+}

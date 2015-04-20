@@ -1,0 +1,31 @@
+package com.msee.mseetv.module.home.entity;
+
+import com.google.gson.annotations.SerializedName;
+
+public class HotListItem {
+	@SerializedName("uuid")
+	public String uuid;
+	@SerializedName("header_small")
+	public String headerSmall;
+	@SerializedName("header_big")
+	public String headerBig;
+	@SerializedName("work_type")
+	public int workType;
+	@SerializedName("work_id")
+	public long workId;
+	@SerializedName("work_width")
+	public double workWidth;
+	@SerializedName("work_height")
+	public double workHeight;
+	@SerializedName("work_cover")
+	public String nickname;
+	@SerializedName("username")
+	public String hx_id;
+	@SerializedName("girl_honor")
+	public String hx_uuid;
+	@SerializedName("fans_number")
+	public String user_img;
+	
+
+
+}

@@ -1,0 +1,63 @@
+package com.msee.mseetv.module.register.api;
+
+import java.util.HashMap;
+
+import android.os.Message;
+
+import com.google.gson.reflect.TypeToken;
+import com.msee.mseetv.base.BaseAPI;
+import com.msee.mseetv.base.BaseEntity;
+import com.msee.mseetv.module.home.api.GetDataHandler;
+import com.msee.mseetv.module.login.result.LoginResult;
+import com.msee.mseetv.utils.Utils;
+
+public class RegistApi extends BaseAPI {
+
+	private static final String TAG = "RegistApi";
+	// private static final String URL_LOGIN = "/ms15/account/login";
+	private static final String URL_REGIST = "/ms15/reg/email_reg";
+	public static final int LOAD_REGIST = 10;
+
+	private GetDataHandler mGetDataHandler;
+
+	public RegistApi(GetDataHandler mGetDataHandler) {
+		this.mGetDataHandler = mGetDataHandler;
+	}
+
+	/**
+	 * 发送系统列表请求
+	 */
+	public void sendRegist() {
+		// 发送滚动信息列表请求
+		Message loadRegistMsg = new Message();
+		loadRegistMsg.arg1 = LOAD_REGIST;
+		loadRegistMsg.setTarget(mGetDataHandler);
+		java.lang.reflect.Type type = new TypeToken<LoginResult>() {
+		}.getType();
+		HashMap<String, String> paramsData = new HashMap<String, String>();
+		paramsData.put("username", "mdjlan123");
+		paramsData.put("email", "80675752@qq.com");
+		paramsData.put("password", Utils.stringToMD5("123456.."));
+		excuteHttpPost(URL_REGIST, Regist, "", type, paramsData);
+
+	}
+
+	/**
+	 * 获取系统列表
+	 * 
+	 * @param msg
+	 * @param tag
+	 * @param pageNum
+	 */
+	public void getLoginInfo(Message msg, String tag) {
+		java.lang.reflect.Type type = new TypeToken<LoginResult>() {
+		}.getType();
+		HashMap<String, String> paramsData = new HashMap<String, String>();
+		paramsData.put("username", "mdjlan123");
+		paramsData.put("email", "80675752@qq.com");
+		paramsData.put("password", Utils.stringToMD5("123456.."));
+		excuteHttpPost(URL_REGIST, msg, "", type, paramsData);
+
+	}
+
+}

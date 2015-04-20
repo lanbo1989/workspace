@@ -1,0 +1,6 @@
+class Holder {
+	public ImageView rowIcon;
+	public ProgressBar pbLoad;
+	public ImageView beautyIcon;
+	public TextView beautyName;
+}
